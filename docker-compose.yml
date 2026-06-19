@@ -1,0 +1,18 @@
+# Local PostgreSQL for development. Mirrors the managed Postgres on Railway.
+# Start:  docker compose up -d
+# Stop:   docker compose down
+services:
+  db:
+    image: postgres:16
+    container_name: arskymap-db
+    environment:
+      POSTGRES_USER: arskymap
+      POSTGRES_PASSWORD: arskymap
+      POSTGRES_DB: arskymap
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

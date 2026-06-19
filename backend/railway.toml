@@ -1,0 +1,10 @@
+# Railway service config for the backend. Set this service's Root Directory to
+# /backend in the Railway dashboard so Nixpacks builds from here.
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "gunicorn wsgi:app --bind 0.0.0.0:$PORT"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"

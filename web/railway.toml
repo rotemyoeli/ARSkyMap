@@ -1,0 +1,9 @@
+# Railway service config for the web (PWA) frontend. Set this service's Root
+# Directory to /web in the Railway dashboard.
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm ci && npm run build"
+
+[deploy]
+startCommand = "npm run preview"
+restartPolicyType = "ON_FAILURE"
