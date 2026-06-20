@@ -49,7 +49,7 @@ export default function OrbitMarkApp() {
         ) : tab === "passes" ? (
           <PassesScreen core={core} />
         ) : tab === "learn" ? (
-          <LearnScreen />
+          <LearnScreen core={core} />
         ) : (
           <SettingsScreen core={core} />
         )}

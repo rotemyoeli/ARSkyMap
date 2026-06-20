@@ -7,6 +7,7 @@
 import { useMemo, useState } from "react";
 import { type TleObject } from "../orbital/catalog";
 import { lookAngle } from "../orbital/propagate";
+import { altitudeBandKm } from "../orbital/orbit";
 import { Marker } from "./Tonight";
 import { type CatalogCore } from "./useCatalog";
 import { useCatalogStore, isAnalystRange } from "./store";
@@ -212,6 +213,7 @@ export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogC
   const conf = core.confidenceFor(o);
   const epoch = core.epochFor(o);
   const vis = core.visibilityFor(o);
+  const orbit = core.orbitFor(o);
   const saveAll = () => {
     store.save({ noradId: o.noradId, name: o.name, type: o.objectType });
     store.setNote(o.noradId, note);
@@ -247,6 +249,23 @@ export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogC
           is never a guarantee.
         </p>
       </section>
+      {orbit && (
+        <section className="om-panel">
+          <p className="om-eyebrow">Orbit{orbit.decaying ? " · ⚠ decaying" : ""}</p>
+          <div className="om-passgrid" style={{ gridTemplateColumns: "1fr 1fr" }}>
+            {cell("Perigee", `${Math.round(orbit.perigeeKm).toLocaleString()} km`)}
+            {cell("Apogee", `${Math.round(orbit.apogeeKm).toLocaleString()} km`)}
+            {cell("Period", Number.isFinite(orbit.periodMin) ? `${orbit.periodMin.toFixed(1)} min` : "—")}
+            {cell("Inclination", `${orbit.inclinationDeg.toFixed(1)}°`)}
+          </div>
+          {orbit.decaying && (
+            <p className="om-sub" style={{ margin: "12px 0 0", fontSize: 12, color: "var(--om-warning)" }}>
+              Low perigee with drag — <b>modelled as decaying</b> and may re-enter relatively soon. This is a
+              coarse estimate from the element set, not a precise re-entry time or location.
+            </p>
+          )}
+        </section>
+      )}
       <section className="om-panel">
         <p className="om-eyebrow">Save &amp; annotate · the wedge</p>
         {identityLimited ? (
@@ -364,12 +383,45 @@ function LearnCard({ title, children, source }: { title: string; children: React
   );
 }
 
+/** Crowded shells (Idea 4) — educational orbital-density by altitude band. NOT collision prediction. */
+function CrowdedShells({ core }: { core: CatalogCore }) {
+  const bands = new Map<number, number>();
+  for (const o of core.objects) {
+    const p = core.orbitFor(o);
+    if (!p || p.perigeeKm < 0 || p.apogeeKm > 60000) continue;
+    const b = altitudeBandKm(p);
+    bands.set(b, (bands.get(b) ?? 0) + 1);
+  }
+  const rows = [...bands.entries()].filter(([b]) => b >= 200 && b <= 2000).sort((a, b) => b[0] - a[0]);
+  const max = Math.max(1, ...rows.map(([, c]) => c));
+  return (
+    <section className="om-panel" aria-labelledby="shells-h">
+      <p className="om-eyebrow" id="shells-h">Crowded shells · where the catalogue concentrates</p>
+      {rows.map(([band, count]) => (
+        <div key={band} style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 0" }}>
+          <span style={{ width: 72, font: "600 12px/1 var(--om-font-mono)", color: "var(--om-text-secondary)" }}>~{band} km</span>
+          <span style={{ flex: 1, height: 10, background: "var(--om-bg-panel-deep)", borderRadius: 6, overflow: "hidden" }}>
+            <span style={{ display: "block", height: "100%", width: `${(count / max) * 100}%`, background: "var(--om-action-primary)" }} />
+          </span>
+          <span style={{ width: 32, textAlign: "right", font: "600 12px/1 var(--om-font-mono)" }}>{count}</span>
+        </div>
+      ))}
+      <p className="om-sub" style={{ margin: "12px 0 0", fontSize: 12 }}>
+        How many tracked objects share each ~100 km altitude band — a teaching view of congestion (e.g. the
+        Starlink shells and the debris-heavy ~800 km region). This is <b>aggregate density education only</b>,
+        not a conjunction or collision prediction.
+      </p>
+    </section>
+  );
+}
+
 /** Learn (S-14) — reviewed, sourced explainers (differentiator D3). No unreviewed claim ships. */
-export function LearnScreen() {
+export function LearnScreen({ core }: { core: CatalogCore }) {
   return (
     <>
       <p className="om-eyebrow">Learn</p>
       <h1 className="om-h1">How to read the sky honestly</h1>
+      <CrowdedShells core={core} />
       <LearnCard title="Modelled, not detected" source="CelesTrak GP data formats (T.S. Kelso)">
         OrbitMark computes each position with the SGP4 model from public orbital elements — it never
         senses or &ldquo;detects&rdquo; an object through your camera. What you see is a calculation, shown as a
@@ -398,7 +450,8 @@ export function LearnScreen() {
 function DataStatus({ core }: { core: CatalogCore }) {
   const ages = { high: 0, good: 0, degrading: 0, low: 0 };
   const kinds = { active: 0, inactive: 0, rocket: 0, debris: 0 };
-  for (const o of core.objects) { ages[core.confidenceFor(o).level]++; kinds[core.kindOf(o)]++; }
+  let decaying = 0;
+  for (const o of core.objects) { ages[core.confidenceFor(o).level]++; kinds[core.kindOf(o)]++; if (core.orbitFor(o)?.decaying) decaying++; }
   const cell = (k: string, v: string) => <div className="om-passcell"><div className="k">{k}</div><div className="v">{v}</div></div>;
   return (
     <section className="om-panel" aria-labelledby="ds-h">
@@ -410,6 +463,7 @@ function DataStatus({ core }: { core: CatalogCore }) {
         {cell("Debris", String(kinds.debris))}
         {cell("Rocket bodies", String(kinds.rocket))}
         {cell("Catalogue age", core.elementAge ? `updated ${core.elementAge}` : "unknown")}
+        {cell("Decaying", `${decaying} low-perigee`)}
       </div>
       <p className="om-sub" style={{ margin: "12px 0 0", fontSize: 12 }}>
         Element freshness: <b style={{ color: "var(--om-success)" }}>{ages.high + ages.good} fresh/good</b> ·

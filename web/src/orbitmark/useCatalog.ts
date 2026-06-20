@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { loadCatalog, type TleObject } from "../orbital/catalog";
 import { lookAngle, compass, type LookAngle, type Observer } from "../orbital/propagate";
 import { satVisibility, type Visibility } from "../orbital/visibility";
+import { orbitParams, type OrbitParams } from "../orbital/orbit";
 import { markerKind, type MarkerKind } from "./useOverhead";
 
 export interface Confidence {
@@ -33,6 +34,7 @@ export interface CatalogCore {
   epochFor: (o: TleObject) => Date | null;
   confidenceFor: (o: TleObject) => Confidence;
   visibilityFor: (o: TleObject) => Visibility | null;
+  orbitFor: (o: TleObject) => OrbitParams | null;
 }
 
 /** Parse the epoch (UTC) from TLE line 1 columns 19-32 (2-digit year + day-of-year.fraction). */
@@ -120,6 +122,7 @@ export function useCatalog(): CatalogCore {
     compassOf: compass,
     epochFor: (o) => tleEpoch(o.tleLine1),
     visibilityFor: (o) => satVisibility(o.tleLine1, o.tleLine2, observer, now, stdMagFor(o)),
+    orbitFor: (o) => orbitParams(o.tleLine1, o.tleLine2),
     confidenceFor: (o) => {
       const ep = tleEpoch(o.tleLine1);
       const ageDays = ep ? (now.getTime() - ep.getTime()) / 86_400_000 : 3;
