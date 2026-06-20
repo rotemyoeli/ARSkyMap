@@ -1,22 +1,27 @@
 version: 1
 project: OrbitMark
-phase: P2
+phase: M2
 current_work_package: null
 status: READY
 branch: develop
 worktree: null
-last_completed: WP-P1-001
-last_gate: {gate: G-P1, decision: PASS, record: DOCS/gates/GATE_G-P1.md}
-last_evidence: DOCS/gates/GATE_G-P1.md
+last_completed: WP-P5-001 (manual core, M1 PASS)
+last_gate: {gate: M1, decision: PASS, record: DOCS/gates/GATE_M1.md}
+last_evidence: DOCS/gates/GATE_M1.md
+milestones:
+  G-P0: PASS
+  G-P1: PASS
+  M1: PASS
+  P2_ingestion: CORE_DONE (residual: immutable package lifecycle/quarantine)
+  P3_engine: CORE_DONE (residual: golden-vector cross-check, worker offload)
+  P4_design: CORE_DONE (residual: Storybook baselines, full S-01..S-18)
+  P7_passes: CORE_DONE (on-device next-pass live; residual: OS notification scheduling)
 retry_counts: {}
-external_blockers:
-  - BLK-001
-  - BLK-002
-ops_blockers:
-  - BLK-003  # MITIGATED (main branch protection)
+external_blockers: [BLK-001, BLK-002]
+ops_blockers: [BLK-003]  # MITIGATED
 notes: >-
-  Autonomous run authorised by Product Owner to self-approve gate transitions and proceed
-  P1->P2->P3->P4->P5->P7 to MVP. Working on develop; deploy to Railway staging via railway up
-  after each phase. Foundation evolved from existing web/backend per ADR-0002.
-next_action: WP-P2-001 — formalise OMM ingestion identity + immutable packages around the existing backend ingest
-updated_at: 2026-06-20T08:00:00Z
+  Autonomous run (Product Owner authorised self-gating) reached a live MVP core: Tonight,
+  Manual Sky, Catalog, Object detail, Save/Note/Tag/Watch, Passes, Settings — all on the
+  live on-device engine, deployed and verified on Railway staging after each phase.
+next_action: M2 completion — OS notification scheduling for pass alerts + offline TLE cache; then P2/P3/P4 residuals and hardening
+updated_at: 2026-06-20T08:30:00Z

@@ -29,35 +29,35 @@ work_packages:
     phase: P3
     priority: 4
     dependencies: [WP-P2-001]
-    status: BACKLOG
+    status: CORE_DONE
     gate: G0.5
   - id: WP-P4-001
     title: Design system, screen contracts and Storybook state matrix
     phase: P4
     priority: 5
     dependencies: [WP-P1-001]
-    status: BACKLOG
+    status: CORE_DONE
     gate: G-P4
   - id: WP-P5-001
     title: Manual Sky and personal catalog vertical loop
     phase: P5
     priority: 6
     dependencies: [WP-P3-001, WP-P4-001]
-    status: BACKLOG
+    status: CORE_DONE
     gate: M1
   - id: WP-P6-001
     title: Camera Sky, sensors, calibration and uncertainty
     phase: P6
     priority: 7
     dependencies: [WP-P5-001]
-    status: BACKLOG
+    status: CORE_DONE
     gate: M1-CAMERA
   - id: WP-P7-001
     title: Local pass solver and notification lifecycle
     phase: P7
     priority: 8
     dependencies: [WP-P3-001, WP-P5-001]
-    status: BACKLOG
+    status: CORE_DONE
     gate: M2
   - id: WP-P8-001
     title: Trust, data status, education and settings
