@@ -383,11 +383,38 @@ export function LearnScreen() {
   );
 }
 
+function DataStatus({ core }: { core: CatalogCore }) {
+  const ages = { high: 0, good: 0, degrading: 0, low: 0 };
+  const kinds = { active: 0, inactive: 0, rocket: 0, debris: 0 };
+  for (const o of core.objects) { ages[core.confidenceFor(o).level]++; kinds[core.kindOf(o)]++; }
+  const cell = (k: string, v: string) => <div className="om-passcell"><div className="k">{k}</div><div className="v">{v}</div></div>;
+  return (
+    <section className="om-panel" aria-labelledby="ds-h">
+      <p className="om-eyebrow" id="ds-h">Data status · pipeline transparency</p>
+      <div className="om-passgrid" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        {cell("Source lane", core.source === "cache" ? "cached (offline)" : core.source)}
+        {cell("Objects", String(core.objects.length))}
+        {cell("Payloads", String(kinds.active + kinds.inactive))}
+        {cell("Debris", String(kinds.debris))}
+        {cell("Rocket bodies", String(kinds.rocket))}
+        {cell("Catalogue age", core.elementAge ? `updated ${core.elementAge}` : "unknown")}
+      </div>
+      <p className="om-sub" style={{ margin: "12px 0 0", fontSize: 12 }}>
+        Element freshness: <b style={{ color: "var(--om-success)" }}>{ages.high + ages.good} fresh/good</b> ·
+        {" "}<b style={{ color: "var(--om-warning)" }}>{ages.degrading} degrading</b> ·
+        {" "}<b style={{ color: "var(--om-danger)" }}>{ages.low} over a week old</b>.
+        Public elements from CelesTrak; we never serve silently-stale data — every object shows its epoch and confidence.
+      </p>
+    </section>
+  );
+}
+
 export function SettingsScreen({ core }: { core: CatalogCore }) {
   return (
     <>
       <p className="om-eyebrow">Settings · privacy &amp; accessibility</p>
       <h1 className="om-h1">Your data, on your device</h1>
+      <DataStatus core={core} />
       <section className="om-panel">
         <p className="om-eyebrow">Our promise</p>
         <p className="om-sub" style={{ margin: 0 }}>
