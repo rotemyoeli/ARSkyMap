@@ -10,6 +10,8 @@ DOCS/PROJECT_SKILLS.md text eol=lf
 *.csv text eol=lf
 *.ts text eol=lf
 *.tsx text eol=lf
+SHA256SUMS text eol=lf
+*SHA256SUMS text eol=lf
 
 # Binary / non-normalized assets
 *.pdf binary

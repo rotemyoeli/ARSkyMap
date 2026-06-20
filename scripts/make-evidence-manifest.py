@@ -12,7 +12,7 @@ Writes <run_dir>/environment.json, <run_dir>/manifest.json and <run_dir>/SHA256S
 hashing every file in the run dir plus any extra repository artifacts listed.
 """
 from pathlib import Path
-import hashlib, json, platform, shutil, subprocess, sys
+import hashlib, json, os, platform, shutil, subprocess, sys
 
 root = Path(__file__).resolve().parents[1]
 
@@ -62,7 +62,7 @@ def main() -> int:
         "claude": tool_version("claude", "--version"),
         "gh": tool_version("gh", "--version"),
     }
-    (run_dir / "environment.json").write_text(json.dumps(environment, indent=2) + "\n", encoding="utf-8")
+    (run_dir / "environment.json").write_text(json.dumps(environment, indent=2) + "\n", encoding="utf-8", newline="\n")
 
     # Collect artifacts: everything in the run dir (except the manifest/sums we write) + extras.
     artifact_paths = sorted(
@@ -94,18 +94,18 @@ def main() -> int:
         "artifacts": artifacts,
         "council": {"planning": "planning-council-findings.json", "independent": "council-findings.json"},
         "gate": {"gate": "G-P0", "record": "DOCS/gates/GATE_G-P0.md"},
-        "result": "PENDING",
+        "result": os.environ.get("ORBITMARK_RESULT", "PENDING"),
     }
-    (run_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    (run_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n")
 
     sums = run_dir / "SHA256SUMS"
-    lines = [f"{a['sha256']}  {a['path']}" for a in artifacts]
-    # include the manifest + environment themselves for completeness
-    for extra in ("environment.json", "manifest.json"):
-        f = run_dir / extra
-        if f.is_file():
-            lines.append(f"{sha256(f)}  {str(f.relative_to(root)).replace(chr(92), '/')}")
-    sums.write_text("\n".join(sorted(lines)) + "\n", encoding="utf-8")
+    lines = {f"{a['sha256']}  {a['path']}" for a in artifacts}
+    # include the manifest itself (it is excluded from the artifacts list); environment.json
+    # is already in the run dir and therefore already listed.
+    mf = run_dir / "manifest.json"
+    lines.add(f"{sha256(mf)}  {str(mf.relative_to(root)).replace(chr(92), '/')}")
+    # LF terminators so `sha256sum -c` works on Linux CI (Windows host would emit CRLF).
+    sums.write_text("\n".join(sorted(lines)) + "\n", encoding="utf-8", newline="\n")
 
     print(f"wrote {run_dir/'manifest.json'} with {len(artifacts)} artifacts")
     print(f"wrote {run_dir/'environment.json'} and {sums}")

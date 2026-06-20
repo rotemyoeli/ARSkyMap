@@ -1,0 +1,119 @@
+{
+  "run_id": "20260620T071505Z",
+  "phase": "P0",
+  "work_package": "WP-P0-001",
+  "commit": "e160c605e7155103056859204d62582559ec98dc",
+  "branch": "wp/p0-001-governance-bootstrap",
+  "environment": {
+    "run_id": "20260620T071505Z",
+    "os": "Windows-10-10.0.26100-SP0",
+    "git": "git version 2.45.1.windows.1",
+    "python": "3.11.9",
+    "node": "v24.14.0",
+    "pnpm": "absent",
+    "claude": "2.1.172 (Claude Code)",
+    "gh": "gh version 2.90.0 (2026-04-16)"
+  },
+  "requirements": [
+    "GOV-P0-1",
+    "GOV-P0-2",
+    "GOV-P0-3",
+    "GOV-P0-4",
+    "GOV-P0-5",
+    "GOV-P0-6",
+    "GOV-P0-7"
+  ],
+  "commands": [
+    "scripts/bootstrap_project.sh",
+    "scripts/validate-docs.py",
+    "scripts/generate-skills-registry.py + git diff --exit-code DOCS/PROJECT_SKILLS.md",
+    "scripts/guard-destructive-selftest.sh",
+    "scripts/quality-gate.sh fast"
+  ],
+  "artifacts": [
+    {
+      "path": "artifacts/evidence/P0/WP-P0-001/20260620T071505Z/council-findings.json",
+      "sha256": "e2984ff76a3a88f905e429d647dbab842475b70d691bcf8e8954ec0b75ce6be4",
+      "bytes": 3874
+    },
+    {
+      "path": "artifacts/evidence/P0/WP-P0-001/20260620T071505Z/COUNCIL_REVIEW.md",
+      "sha256": "7ec4c2115d833ecf2e3ef79a74e758892df61194808181f803da3f06a3a8675f",
+      "bytes": 2962
+    },
+    {
+      "path": "artifacts/evidence/P0/WP-P0-001/20260620T071505Z/environment.json",
+      "sha256": "f363f294d7ad73bf5dc564e000040e00bb783a519783f14b79e56e8eb21bac04",
+      "bytes": 256
+    },
+    {
+      "path": "artifacts/evidence/P0/WP-P0-001/20260620T071505Z/guard-selftest.txt",
+      "sha256": "acc86bcc572c351b0a8a5ce2c64b0f22793568ebffad250be03ebfb533bc42cf",
+      "bytes": 144
+    },
+    {
+      "path": "artifacts/evidence/P0/WP-P0-001/20260620T071505Z/planning-council-findings.json",
+      "sha256": "95ebf11080eb34a4581279bf0ddc3db84cf5e391c06709f6a38eedfda9ac6d55",
+      "bytes": 5553
+    },
+    {
+      "path": "artifacts/evidence/P0/WP-P0-001/20260620T071505Z/quality-gate-fast.txt",
+      "sha256": "8e3dbf5a74cc221357d063a41914cf6ddc42f707e47e82f74c98a3431480be7b",
+      "bytes": 82
+    },
+    {
+      "path": "artifacts/evidence/P0/WP-P0-001/20260620T071505Z/registry-check.txt",
+      "sha256": "29cf040a3ded96c92adceaa4cbde5c29056b17d13caca48013aae5c6261326b4",
+      "bytes": 109
+    },
+    {
+      "path": "artifacts/evidence/P0/WP-P0-001/20260620T071505Z/settings-validate.txt",
+      "sha256": "1e46c9004ddd2adf8c7cd3bedfcb2c42eefab7b71176d32f630a6d4fc2ee19b0",
+      "bytes": 26
+    },
+    {
+      "path": "artifacts/evidence/P0/WP-P0-001/20260620T071505Z/validate-docs.txt",
+      "sha256": "caa88d1400f2e6b3158d400def4831155401f15bedf0b01d924ed4f1b7b9a4cf",
+      "bytes": 43
+    },
+    {
+      "path": "DOCS/work-packages/WP-P0-001.md",
+      "sha256": "cb680878b8bf7d3cfa4f21bdc042cd5d4fe1eb8ba68c3600ab6a1862df33512e",
+      "bytes": 6417
+    },
+    {
+      "path": "DOCS/decisions/ADR-0001-adopt-governance-package.md",
+      "sha256": "9c3e4b21b6ff09514bf324ca63b34a3455685e89acdc72410b0512491722a0e0",
+      "bytes": 2404
+    },
+    {
+      "path": "DOCS/REQUIREMENTS_TRACEABILITY.csv",
+      "sha256": "bc0471c7654187407cd19c4d4d77036228d9d50dc4203458eac3ff80b3a5e1f9",
+      "bytes": 1124
+    },
+    {
+      "path": "DOCS/12_BLOCKERS.md",
+      "sha256": "9570b84a1859fa57f0909d2dcc6b65ef53bbed02bf7d5137571f84e4068b2773",
+      "bytes": 1291
+    },
+    {
+      "path": "DOCS/PROJECT_SKILLS.md",
+      "sha256": "c8392d3d9c28894513805ca61e85eaf8a73a9af4400b45aa1f0e39e33861c4b5",
+      "bytes": 3282
+    },
+    {
+      "path": "DOCS/gates/GATE_G-P0.md",
+      "sha256": "c9f68ba970b5854c22ef39a31aa3199e678fadff270cc0859afe7628ba4319fc",
+      "bytes": 3180
+    }
+  ],
+  "council": {
+    "planning": "planning-council-findings.json",
+    "independent": "council-findings.json"
+  },
+  "gate": {
+    "gate": "G-P0",
+    "record": "DOCS/gates/GATE_G-P0.md"
+  },
+  "result": "G-P0 PASS"
+}

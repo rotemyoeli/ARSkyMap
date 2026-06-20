@@ -1,0 +1,10 @@
+{
+  "run_id": "20260620T071505Z",
+  "os": "Windows-10-10.0.26100-SP0",
+  "git": "git version 2.45.1.windows.1",
+  "python": "3.11.9",
+  "node": "v24.14.0",
+  "pnpm": "absent",
+  "claude": "2.1.172 (Claude Code)",
+  "gh": "gh version 2.90.0 (2026-04-16)"
+}

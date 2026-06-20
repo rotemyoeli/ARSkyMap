@@ -5,14 +5,16 @@ work_packages:
     phase: P0
     priority: 1
     dependencies: []
-    status: READY
+    status: DONE
     gate: G-P0
+    gate_decision: PASS
+    evidence: artifacts/evidence/P0/WP-P0-001/20260620T071505Z
   - id: WP-P1-001
     title: Greenfield monorepo and clean launch foundation
     phase: P1
     priority: 2
     dependencies: [WP-P0-001]
-    status: BACKLOG
+    status: READY
     gate: G-P1
   - id: WP-P2-001
     title: OMM ingestion, identity and immutable package lifecycle
