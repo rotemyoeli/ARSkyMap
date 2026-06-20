@@ -1,36 +1,32 @@
 version: 1
 project: OrbitMark
-phase: M2
+phase: STAGING-RC (production decision is human-only)
 current_work_package: null
-status: READY
+status: AWAITING_HUMAN_PRODUCTION_DECISION
 branch: develop
 worktree: null
-last_completed: WP-P5-001 (manual core, M1 PASS)
-last_gate: {gate: M1, decision: PASS, record: DOCS/gates/GATE_M1.md}
-last_evidence: DOCS/gates/GATE_M1.md
+last_completed: P9 hardening + M2/M3/Beta gates
+last_gate: {gate: BETA, decision: PASS_WITH_ADVISORY, record: DOCS/gates/GATE_M2_M3_BETA.md}
+last_evidence: artifacts/evidence/P9/council-findings.json
 milestones:
   G-P0: PASS
   G-P1: PASS
   M1: PASS
-  P2_ingestion: CORE_DONE (residual: immutable package lifecycle/quarantine)
-  P3_engine: CORE_DONE (residual: golden-vector cross-check, worker offload)
-  P4_design: CORE_DONE (residual: Storybook baselines, full S-01..S-18)
-  P7_passes: CORE_DONE (on-device next-pass live; residual: OS notification scheduling)
-retry_counts: {}
+  M2: PASS (wedge: save/note/tag/watch + passes + reminders + offline + installable PWA)
+  M3: PASS (Data Status + Learn + privacy)
+  G0.5: PASS (independent golden vectors, JS + Python)
+  Beta: PASS_WITH_ADVISORY (P9 council CRITICAL/MAJOR remediated + verified)
+differentiation_backlog:
+  D1_uncertainty_age: DONE
+  D3_debris_sustainability: DONE (Learn + debris data)
+  D4_visibility_magnitude: DONE (3-gate may-be-visible; full magnitude model = advisory)
+  D5_starlink_trains: DONE
+  D6_freshness_declutter: DONE
+  D8_privacy_promise: DONE
+  D9_golden_vectors: DONE
+  C1_celestrak_compliance: OPEN (BLK-004)
 external_blockers: [BLK-001, BLK-002]
-ops_blockers: [BLK-003]  # MITIGATED
-notes: >-
-  Autonomous run (Product Owner authorised self-gating) reached a live MVP core: Tonight,
-  Manual Sky, Catalog, Object detail, Save/Note/Tag/Watch, Passes, Settings — all on the
-  live on-device engine, deployed and verified on Railway staging after each phase.
-differentiation_backlog:  # from DOCS/research + ADR-0003 (evidence-grounded)
-  D1_uncertainty_age: DONE (live)        # age-aware uncertainty ring + TLE epoch/confidence
-  D6_freshness_declutter: NEXT           # per-object freshness + active/debris filter
-  D8_privacy_promise: NEXT               # stated local-first/no-ads/no-account + "may be visible" sunlit gate
-  D4_visibility_magnitude: PLANNED       # 3-gate sunlit+darkness+magnitude model + pass brightness
-  D9_golden_vectors: PLANNED             # server Skyfield/python-sgp4 cross-check (closes G0.5)
-  D3_debris_sustainability: PLANNED      # debris filters + IAU brightness context + Learn
-  D5_starlink_trains: PLANNED            # train detection + group passes
-  C1_celestrak_compliance: OPEN (BLK-004) # confirm usage/attribution + cache + rate-limit before scaling
-next_action: D6 freshness/de-clutter + D8 privacy promise (quick wins); then D4 visibility model + D9 golden vectors; M2 notifications; P8 trust; P9 hardening; P10 staging beta
-updated_at: 2026-06-20T09:00:00Z
+ops_blockers: [BLK-003, BLK-004]
+production_decision: DOCS/PRODUCTION_RECOMMENDATION.md  # human-only; autonomous authority ends here
+next_action: Human/Product Owner reviews PRODUCTION_RECOMMENDATION.md and clears BLK-002/BLK-004; eng clears security advisories. Camera Sky (P6) waits on physical device (BLK-001).
+updated_at: 2026-06-20T10:00:00Z

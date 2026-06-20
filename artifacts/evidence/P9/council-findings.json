@@ -1,0 +1,28 @@
+{
+  "review_type": "P9_hardening_independent",
+  "input_commit_reviewed": "db001c0",
+  "remediation_commit": "779d7dc",
+  "quorum": ["red-team-adversary", "accessibility-auditor", "security-privacy-reviewer", "program-director (consolidation)"],
+  "raw_verdicts": {"red-team": "APPROVE_WITH_CONDITIONS", "accessibility": "APPROVE_WITH_CONDITIONS (2 CRITICAL)", "security-privacy": "APPROVE_WITH_CONDITIONS (2 MAJOR)"},
+  "findings": [
+    {"id": "A11Y-1", "severity": "CRITICAL", "area": "a11y", "evidence": "om-dot freshness + confidence shown by colour alone", "status": "REMEDIATED", "fix": "om-dot role=img+aria-label; confidence span aria-label with full label"},
+    {"id": "A11Y-2", "severity": "CRITICAL", "area": "a11y", "evidence": "watched ★ no accessible label (core task)", "status": "REMEDIATED", "fix": "aria-label=watched on star"},
+    {"id": "A11Y-4", "severity": "MAJOR", "area": "a11y", "evidence": "dead standalone Tonight buttons (no onClick)", "status": "REMEDIATED", "fix": "deleted standalone Tonight component (kept Marker)"},
+    {"id": "A11Y-5", "severity": "MAJOR", "area": "a11y", "evidence": "reduced-motion did not stop spinning ring", "status": "REMEDIATED", "fix": ".om-ring{animation:none} in reduced-motion block"},
+    {"id": "A11Y-3", "severity": "MAJOR", "area": "a11y", "evidence": "Tonight 5 tabs vs 6-col grid", "status": "REMEDIATED", "fix": "removed dead Tonight tab bar"},
+    {"id": "A11Y-6", "severity": "MAJOR", "area": "a11y", "evidence": "All/Saved group missing role/label", "status": "REMEDIATED", "fix": "role=group aria-label"},
+    {"id": "A11Y-7/8/10", "severity": "MINOR", "area": "a11y", "evidence": "nav label generic; decorative bullet; tab fixed height", "status": "REMEDIATED", "fix": "nav label; bullet aria-hidden; tab min-height"},
+    {"id": "SP-1", "severity": "MAJOR", "area": "security", "evidence": "hardcoded SECRET_KEY default + /api/health discloses dev_mode", "status": "REMEDIATED", "fix": "SECRET_KEY mandatory in prod; dev_mode removed from health (verified live)"},
+    {"id": "SP-2", "severity": "MAJOR", "area": "security", "evidence": "wildcard CORS on authenticated catalog", "status": "REMEDIATED", "fix": "CORS scoped to known origins (+ CORS_ORIGINS env)"},
+    {"id": "SP-3", "severity": "MINOR", "area": "security", "evidence": "SW caches API responses (stale-TLE risk)", "status": "REMEDIATED", "fix": "SW excludes /api + celestrak"},
+    {"id": "SP-4", "severity": "MINOR", "area": "security", "evidence": "no allowlist on type param", "status": "REMEDIATED", "fix": "ALLOWED_TYPES allowlist -> 400 (verified live)"},
+    {"id": "SP-5", "severity": "ADVISORY", "area": "supply-chain", "evidence": "Google Fonts CDN no SRI", "status": "BACKLOG", "fix": "self-host fonts / SRI (advisory)"},
+    {"id": "SP-6", "severity": "ADVISORY", "area": "privacy", "evidence": "precise location confirmed on-device only; no trackers", "status": "CONFIRMED_POSITIVE"},
+    {"id": "RT-1", "severity": "ADVISORY", "area": "claims", "evidence": "future-dated arXiv citation not independently reproducible alone", "status": "REMEDIATED", "fix": "corroborated with Vallado/Oltrogge primary sources"},
+    {"id": "RT-2", "severity": "MINOR", "area": "honesty", "evidence": "cylindrical umbra + civil-twilight simplification not disclosed", "status": "REMEDIATED", "fix": "disclosed in Object detail copy"},
+    {"id": "RT-3", "severity": "MINOR", "area": "orbital", "evidence": "naive azimuth mean wrong across 0/360", "status": "REMEDIATED", "fix": "circular mean (atan2 of sin/cos)"}
+  ],
+  "final_verdict": "APPROVE (staging beta)",
+  "unresolved_blocking": "none (CRITICAL/MAJOR remediated, verified live)",
+  "residual_external": ["BLK-001 device matrix", "BLK-002 production+legal", "BLK-004 CelesTrak terms"]
+}
