@@ -23,5 +23,14 @@ notes: >-
   Autonomous run (Product Owner authorised self-gating) reached a live MVP core: Tonight,
   Manual Sky, Catalog, Object detail, Save/Note/Tag/Watch, Passes, Settings — all on the
   live on-device engine, deployed and verified on Railway staging after each phase.
-next_action: M2 completion — OS notification scheduling for pass alerts + offline TLE cache; then P2/P3/P4 residuals and hardening
-updated_at: 2026-06-20T08:30:00Z
+differentiation_backlog:  # from DOCS/research + ADR-0003 (evidence-grounded)
+  D1_uncertainty_age: DONE (live)        # age-aware uncertainty ring + TLE epoch/confidence
+  D6_freshness_declutter: NEXT           # per-object freshness + active/debris filter
+  D8_privacy_promise: NEXT               # stated local-first/no-ads/no-account + "may be visible" sunlit gate
+  D4_visibility_magnitude: PLANNED       # 3-gate sunlit+darkness+magnitude model + pass brightness
+  D9_golden_vectors: PLANNED             # server Skyfield/python-sgp4 cross-check (closes G0.5)
+  D3_debris_sustainability: PLANNED      # debris filters + IAU brightness context + Learn
+  D5_starlink_trains: PLANNED            # train detection + group passes
+  C1_celestrak_compliance: OPEN (BLK-004) # confirm usage/attribution + cache + rate-limit before scaling
+next_action: D6 freshness/de-clutter + D8 privacy promise (quick wins); then D4 visibility model + D9 golden vectors; M2 notifications; P8 trust; P9 hardening; P10 staging beta
+updated_at: 2026-06-20T09:00:00Z
