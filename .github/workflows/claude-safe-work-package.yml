@@ -13,6 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: grep -q "id: ${{ inputs.work_package }}" WORK_QUEUE.yaml
-      - run: grep -A6 "id: ${{ inputs.work_package }}" WORK_QUEUE.yaml | grep -q 'status: READY'
-      - run: echo 'This workflow intentionally validates dispatch only. Configure the official Claude Code GitHub Action and repository secret through the documented setup before enabling autonomous execution.'
+      # Block scalars: the grep args contain "id: ..." (colon-space), which is invalid
+      # as a YAML plain scalar after `run:` and caused a workflow startup failure.
+      - run: |
+          grep -q "id: ${{ inputs.work_package }}" WORK_QUEUE.yaml
+      - run: |
+          grep -A6 "id: ${{ inputs.work_package }}" WORK_QUEUE.yaml | grep -q 'status: READY'
+      - run: |
+          echo 'This workflow validates dispatch only. Configure the official Claude Code GitHub Action and repository secret through the documented setup before enabling autonomous execution.'

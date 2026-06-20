@@ -30,7 +30,12 @@ jobs:
       - run: pnpm test:e2e
       - uses: actions/upload-artifact@v4
         if: always()
-        with: {name: web-test-evidence, path: 'test-results/**\nplaywright-report/**\nstorybook-static/**'}
+        with:
+          name: web-test-evidence
+          path: |
+            test-results/**
+            playwright-report/**
+            storybook-static/**
   python:
     if: ${{ hashFiles('pyproject.toml') != '' }}
     runs-on: ubuntu-latest
@@ -51,4 +56,8 @@ jobs:
       - run: pytest --junitxml=pytest.xml --cov --cov-report=xml
       - uses: actions/upload-artifact@v4
         if: always()
-        with: {name: python-test-evidence, path: 'pytest.xml\ncoverage.xml'}
+        with:
+          name: python-test-evidence
+          path: |
+            pytest.xml
+            coverage.xml
