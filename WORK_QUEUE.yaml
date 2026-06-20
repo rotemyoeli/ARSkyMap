@@ -22,7 +22,7 @@ work_packages:
     phase: P2
     priority: 3
     dependencies: [WP-P1-001]
-    status: READY
+    status: CORE_DONE
     gate: G-P2
   - id: WP-P3-001
     title: Orbital engine, independent vectors and working-set scheduler
@@ -50,7 +50,7 @@ work_packages:
     phase: P6
     priority: 7
     dependencies: [WP-P5-001]
-    status: CORE_DONE
+    status: BLOCKED_EXTERNAL  # BLK-001 physical device; Manual Sky completes core tasks, Camera not required for MVP
     gate: M1-CAMERA
   - id: WP-P7-001
     title: Local pass solver and notification lifecycle
