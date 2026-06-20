@@ -27,7 +27,7 @@ export function DataTruth({ core }: { core: CatalogCore }) {
 
 const CONF_COLOR = { high: "var(--om-success)", good: "var(--om-success)", degrading: "var(--om-warning)", low: "var(--om-danger)" } as const;
 
-function Row({ core, o, onOpen, right }: { core: CatalogCore; o: TleObject; onOpen: (o: TleObject) => void; right?: React.ReactNode }) {
+function Row({ core, o, onOpen, right, badge }: { core: CatalogCore; o: TleObject; onOpen: (o: TleObject) => void; right?: React.ReactNode; badge?: React.ReactNode }) {
   const store = useCatalogStore();
   const watched = store.byId(o.noradId)?.watched;
   const conf = core.confidenceFor(o);
@@ -35,7 +35,7 @@ function Row({ core, o, onOpen, right }: { core: CatalogCore; o: TleObject; onOp
     <button className="om-row" type="button" onClick={() => onOpen(o)}>
       <Marker kind={core.kindOf(o)} watched={watched} uncertainty={conf.u} />
       <span style={{ minWidth: 0 }}>
-        <span className="name">{o.name}</span><br />
+        <span className="name">{o.name}{badge}</span><br />
         <span className="meta">{KIND_LABEL[core.kindOf(o)]} · #{o.noradId} · <span style={{ color: CONF_COLOR[conf.level] }}>conf {conf.level}</span></span>
       </span>
       <span className="om-sep">{right}</span>
@@ -43,11 +43,16 @@ function Row({ core, o, onOpen, right }: { core: CatalogCore; o: TleObject; onOp
   );
 }
 
+function VisibleBadge() {
+  return <span style={{ marginLeft: 8, font: "600 10px/1 var(--om-font-ui)", color: "var(--om-success)", border: "1px solid var(--om-success)", borderRadius: 999, padding: "2px 6px" }}>👁 may be visible</span>;
+}
+
 export function TonightView({ core, onOpen, onTab }: { core: CatalogCore; onOpen: (o: TleObject) => void; onTab: (t: string) => void }) {
   const overhead = useMemo(() => core.objects
-    .map((o) => ({ o, look: core.lookFor(o) }))
+    .map((o) => ({ o, look: core.lookFor(o), vis: core.visibilityFor(o) }))
     .filter((x) => x.look?.aboveHorizon)
     .sort((a, b) => (b.look!.elevationDeg - a.look!.elevationDeg)), [core]);
+  const visCount = overhead.filter((x) => x.vis?.mayBeVisible).length;
   return (
     <>
       <p className="om-eyebrow">Tonight</p>
@@ -59,11 +64,12 @@ export function TonightView({ core, onOpen, onTab }: { core: CatalogCore; onOpen
         {core.status === "error" && <p className="om-sub" style={{ margin: 0, color: "var(--om-warning)" }}>Catalogue unavailable — Manual Sky still works once cached.</p>}
         {core.status === "ready" && overhead.length === 0 && <p className="om-sub" style={{ margin: 0 }}>Nothing of {core.objects.length} tracked objects is above your horizon this moment.</p>}
         {overhead.length > 0 && <>
-          <p className="om-eyebrow">{overhead.length} of {core.objects.length} above the horizon</p>
-          {overhead.slice(0, 12).map(({ o, look }) => (
-            <Row key={o.noradId} core={core} o={o} onOpen={onOpen}
+          <p className="om-eyebrow">{overhead.length} of {core.objects.length} above the horizon · {visCount} may be visible now</p>
+          {overhead.slice(0, 12).map(({ o, look, vis }) => (
+            <Row key={o.noradId} core={core} o={o} onOpen={onOpen} badge={vis?.mayBeVisible ? <VisibleBadge /> : undefined}
               right={<>{look!.elevationDeg.toFixed(0)}° {core.compassOf(look!.azimuthDeg)}<br /><span style={{ color: "var(--om-text-muted)", fontWeight: 500 }}>{Math.round(look!.rangeKm).toLocaleString()} km</span></>} />
           ))}
+          <p className="om-sub" style={{ fontSize: 12, marginTop: 12 }}>&ldquo;May be visible&rdquo; = sunlit + your sky dark enough + above horizon (modelled). Brightness isn&apos;t computed yet, so visibility is never guaranteed.</p>
         </>}
       </section>
       <button className="om-cta" type="button" onClick={() => onTab("sky")}>Open Sky →</button>
@@ -109,25 +115,38 @@ export function ManualSky({ core, onOpen }: { core: CatalogCore; onOpen: (o: Tle
   );
 }
 
+const TYPE_FILTERS = [
+  { id: "all", label: "All" }, { id: "active", label: "Payloads" },
+  { id: "debris", label: "Debris" }, { id: "rocket", label: "Rockets" },
+] as const;
+
 export function CatalogScreen({ core, onOpen }: { core: CatalogCore; onOpen: (o: TleObject) => void }) {
   const store = useCatalogStore();
   const [q, setQ] = useState("");
   const [savedOnly, setSavedOnly] = useState(false);
+  const [typeF, setTypeF] = useState<string>("all");
   const list = useMemo(() => {
     const savedIds = new Set(store.entries.map((e) => e.noradId));
     return core.objects.filter((o) =>
       (!savedOnly || savedIds.has(o.noradId)) &&
+      (typeF === "all" || core.kindOf(o) === typeF) &&
       (q === "" || o.name.toLowerCase().includes(q.toLowerCase()) || String(o.noradId).includes(q)));
-  }, [core.objects, q, savedOnly, store.entries]);
+  }, [core.objects, q, savedOnly, typeF, store.entries]);
   return (
     <>
       <p className="om-eyebrow">My Catalog</p>
       <h1 className="om-h1">Objects {savedOnly ? "you saved" : "in the catalogue"}</h1>
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or NORAD id…" aria-label="Search the catalogue by name or NORAD id"
         style={{ width: "100%", minHeight: 44, borderRadius: 12, border: "1px solid var(--om-border-strong)", background: "var(--om-bg-panel-deep)", color: "var(--om-text-primary)", padding: "0 14px", marginBottom: 12 }} />
-      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-        <button type="button" className="om-cta secondary" style={{ margin: 0, minHeight: 40, borderColor: !savedOnly ? "var(--om-action-primary)" : undefined }} onClick={() => setSavedOnly(false)}>All ({core.objects.length})</button>
-        <button type="button" className="om-cta secondary" style={{ margin: 0, minHeight: 40, borderColor: savedOnly ? "var(--om-action-primary)" : undefined }} onClick={() => setSavedOnly(true)}>Saved ({store.entries.length})</button>
+      <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+        <button type="button" className="om-cta secondary" aria-pressed={!savedOnly} style={{ margin: 0, minHeight: 40, borderColor: !savedOnly ? "var(--om-action-primary)" : undefined }} onClick={() => setSavedOnly(false)}>All ({core.objects.length})</button>
+        <button type="button" className="om-cta secondary" aria-pressed={savedOnly} style={{ margin: 0, minHeight: 40, borderColor: savedOnly ? "var(--om-action-primary)" : undefined }} onClick={() => setSavedOnly(true)}>Saved ({store.entries.length})</button>
+      </div>
+      <div role="group" aria-label="Filter by object type" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 6, marginBottom: 12 }}>
+        {TYPE_FILTERS.map((t) => (
+          <button key={t.id} type="button" aria-pressed={typeF === t.id} onClick={() => setTypeF(t.id)} className="om-cta secondary"
+            style={{ margin: 0, minHeight: 38, fontSize: 13, borderColor: typeF === t.id ? "var(--om-action-primary)" : undefined, color: typeF === t.id ? "var(--om-action-primary)" : undefined }}>{t.label}</button>
+        ))}
       </div>
       <section className="om-panel">
         {list.length === 0 && <p className="om-sub" style={{ margin: 0 }}>{savedOnly ? "No saved objects yet — open one and tap Save." : "No matches."}</p>}
@@ -154,6 +173,7 @@ export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogC
   );
   const conf = core.confidenceFor(o);
   const epoch = core.epochFor(o);
+  const vis = core.visibilityFor(o);
   const saveAll = () => {
     store.save({ noradId: o.noradId, name: o.name, type: o.objectType });
     store.setNote(o.noradId, note);
@@ -176,11 +196,15 @@ export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogC
           {cell("Elevation", look ? `${look.elevationDeg.toFixed(1)}°` : "—")}
           {cell("Range", look ? `${Math.round(look.rangeKm).toLocaleString()} km` : "—")}
           {cell("Above horizon", look ? (look.aboveHorizon ? "yes" : "no") : "—")}
+          {cell("Sunlit", vis ? (vis.sunlit ? "yes" : "in Earth's shadow") : "—")}
+          {cell("Your sky", vis ? (vis.observerDark ? `dark (Sun ${vis.sunElevationDeg.toFixed(0)}°)` : `too bright (Sun ${vis.sunElevationDeg.toFixed(0)}°)`) : "—")}
+          {cell("May be visible", vis ? (vis.mayBeVisible ? "yes — modelled" : "no") : "—")}
         </div>
         <p className="om-sub" style={{ marginTop: 12, fontSize: 12 }}>
           <span style={{ color: CONF_COLOR[conf.level] }}>Confidence: {conf.level}</span> — {conf.label}.
           Geometric, modelled for {core.calculatedForUtc}; the uncertainty ring grows with element age.
-          Visibility (sunlit / darkness / brightness) is a separate model — not yet computed.
+          Visibility = sunlit + your sky dark + above horizon (modelled); brightness/magnitude not yet computed,
+          so &ldquo;may be visible&rdquo; is never a guarantee.
         </p>
       </section>
       <section className="om-panel">
@@ -274,8 +298,12 @@ export function SettingsScreen({ core }: { core: CatalogCore }) {
       <p className="om-eyebrow">Settings · privacy &amp; accessibility</p>
       <h1 className="om-h1">Your data, on your device</h1>
       <section className="om-panel">
-        <p className="om-eyebrow">Privacy</p>
-        <p className="om-sub" style={{ margin: 0 }}>Precise location is used only on this device to compute modelled positions ({core.locationLabel}). It is never sent to a server and never appears in any share card. Your saved catalogue lives in this browser (local-first) — no account required.</p>
+        <p className="om-eyebrow">Our promise</p>
+        <p className="om-sub" style={{ margin: 0 }}>
+          <b>No ads. No account. No tracking.</b> Precise location is used only on this device to compute
+          modelled positions ({core.locationLabel}) — never sent to a server, never in a share card. Your
+          saved catalogue lives in this browser (local-first) and works offline once loaded.
+        </p>
       </section>
       <section className="om-panel">
         <p className="om-eyebrow">Accessibility</p>
