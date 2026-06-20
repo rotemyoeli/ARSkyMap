@@ -1,27 +1,20 @@
 /**
- * OrbitMark — Tonight (S-03), first visible UI slice.
- * Built on fixtures from the Claude Design handoff (DOCS/design_handoff_orbitmark):
- * night-field tokens, shape-first marker grammar with the signature uncertainty ring,
- * the data-truth strip, and claims-compliant product language. No live orbital data yet
- * (P2/P3); copy is honest about modelled positions and cached data.
+ * OrbitMark — Tonight (S-03). Now wired to LIVE data: real catalogue + on-device
+ * propagation (useOverhead) showing what is actually above the horizon for the
+ * observer right now. Night-field tokens + shape-first marker grammar + uncertainty
+ * ring + data-truth strip + claims-compliant copy. Passes (P7) are an honest stub.
  */
 import { useState } from "react";
-
-type MarkerKind = "active" | "inactive" | "rocket" | "debris";
+import { useOverhead, type MarkerKind, type OverheadObject } from "./useOverhead";
 
 /** Shape-first marker glyph (colour only reinforces) with the uncertainty ring. */
-function Marker({ kind, watched = false }: { kind: MarkerKind; watched?: boolean }) {
+export function Marker({ kind, watched = false }: { kind: MarkerKind; watched?: boolean }) {
   const color = `var(--om-marker-${kind})`;
-  const c = 18; // center
+  const c = 18;
   return (
-    <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true" role="img">
-      {/* signature uncertainty ring — never removed on selection */}
-      <circle className="om-ring" cx={c} cy={c} r="15" fill="none" stroke="var(--om-action-primary)"
-        strokeOpacity="0.5" strokeWidth="1.4" strokeDasharray="3 4" />
-      {watched && (
-        <circle cx={c} cy={c} r="16.5" fill="none" stroke="var(--om-success)" strokeOpacity="0.7"
-          strokeWidth="1.2" strokeDasharray="1 3" />
-      )}
+    <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
+      <circle className="om-ring" cx={c} cy={c} r="15" fill="none" stroke="var(--om-action-primary)" strokeOpacity="0.5" strokeWidth="1.4" strokeDasharray="3 4" />
+      {watched && <circle cx={c} cy={c} r="16.5" fill="none" stroke="var(--om-success)" strokeOpacity="0.7" strokeWidth="1.2" strokeDasharray="1 3" />}
       {kind === "active" && <circle cx={c} cy={c} r="6" fill={color} />}
       {kind === "inactive" && <rect x={c - 5.5} y={c - 5.5} width="11" height="11" rx="1.5" fill={color} />}
       {kind === "rocket" && <path d={`M${c} ${c - 7} L${c + 7} ${c} L${c} ${c + 7} L${c - 7} ${c} Z`} fill={color} />}
@@ -30,23 +23,32 @@ function Marker({ kind, watched = false }: { kind: MarkerKind; watched?: boolean
   );
 }
 
-// ---- Fixtures (deterministic; stand-in for the P2/P3 engine) ----
-const CALC_FOR_UTC = "2026-06-20 21:14 UTC";
-const ELEMENT_AGE = "8 h ago";
-const PACKAGE_VERSION = "pkg-2026.171.1";
+function typeLabel(kind: MarkerKind): string {
+  return { active: "Active payload", inactive: "Inactive payload", rocket: "Rocket body", debris: "Catalogued debris" }[kind];
+}
 
-const OVERHEAD = [
-  { key: "om-iss", name: "ISS (ZARYA)", type: "Active payload", kind: "active" as const, sep: "12.4°", range: "612 km", watched: true },
-  { key: "om-cz", name: "CZ-4C R/B", type: "Rocket body", kind: "rocket" as const, sep: "31.0°", range: "1,540 km", watched: false },
-  { key: "om-deb", name: "COSMOS 2251 DEB", type: "Catalogued debris", kind: "debris" as const, sep: "44.7°", range: "1,802 km", watched: false },
-  { key: "om-old", name: "METEOR 1-31", type: "Inactive payload", kind: "inactive" as const, sep: "58.2°", range: "920 km", watched: false },
-];
-
-const PASS = { object: "ISS (ZARYA)", rise: "21:38", max: "21:43", set: "21:48", dir: "SW → NE", maxEl: "61°", sunlit: true };
+function OverheadRow({ o }: { o: OverheadObject }) {
+  return (
+    <button className="om-row" type="button">
+      <Marker kind={o.kind} />
+      <span>
+        <span className="name">{o.name}</span>
+        <br />
+        <span className="meta">{typeLabel(o.kind)} · #{o.noradId}</span>
+      </span>
+      <span className="om-sep">
+        {o.elevationDeg.toFixed(0)}° {o.compass}
+        <br />
+        <span style={{ color: "var(--om-text-muted)", fontWeight: 500 }}>{Math.round(o.rangeKm).toLocaleString()} km</span>
+      </span>
+    </button>
+  );
+}
 
 export default function Tonight() {
   const [tab, setTab] = useState("tonight");
-  const stale = false; // element/package freshness ok in this fixture
+  const d = useOverhead();
+  const stale = d.elementAge != null && /\d+ d ago/.test(d.elementAge);
 
   return (
     <div className="om-shell">
@@ -58,63 +60,57 @@ export default function Tonight() {
       <main className="om-content">
         <p className="om-eyebrow">Tonight</p>
         <h1 className="om-h1">What&apos;s overhead now</h1>
-        <p className="om-sub">Modelled positions for your location · candidates, never a single certain object.</p>
+        <p className="om-sub">Modelled positions for {d.locationLabel} · candidates, never a single certain object.</p>
 
         <div className={`om-truth${stale ? " warn" : ""}`} aria-label="Data status">
-          <span><span className="om-dot" style={{ background: "var(--om-success)" }} />elements <b>updated {ELEMENT_AGE}</b></span>
-          <span>package <b>{PACKAGE_VERSION}</b></span>
-          <span>calculated for <b>{CALC_FOR_UTC}</b></span>
+          <span><span className="om-dot" style={{ background: stale ? "var(--om-warning)" : "var(--om-success)" }} />
+            elements <b>{d.elementAge ? `updated ${d.elementAge}` : "freshness unknown"}</b></span>
+          <span>source <b>{d.source}</b></span>
+          <span>calculated for <b>{d.calculatedForUtc}</b></span>
         </div>
 
         <section className="om-panel" aria-labelledby="overhead-h">
-          <p className="om-eyebrow" id="overhead-h">{OVERHEAD.length} objects above the horizon</p>
-          {OVERHEAD.map((o) => (
-            <button className="om-row" key={o.key} type="button">
-              <Marker kind={o.kind} watched={o.watched} />
-              <span>
-                <span className="name">{o.name}{o.watched && <span aria-label="watched" title="watched" style={{ color: "var(--om-success)" }}> ★</span>}</span>
-                <br />
-                <span className="meta">{o.type}</span>
-              </span>
-              <span className="om-sep">{o.sep}<br /><span style={{ color: "var(--om-text-muted)", fontWeight: 500 }}>{o.range}</span></span>
-            </button>
-          ))}
+          {d.status === "loading" && <p className="om-sub" id="overhead-h" style={{ margin: 0 }}>Loading catalogue and computing positions…</p>}
+          {d.status === "error" && (
+            <div>
+              <p className="om-eyebrow" id="overhead-h" style={{ color: "var(--om-warning)" }}>Catalogue unavailable</p>
+              <p className="om-sub" style={{ margin: 0 }}>Could not load elements. Manual Sky still works offline once cached. ({d.error})</p>
+            </div>
+          )}
+          {d.status === "empty" && (
+            <div>
+              <p className="om-eyebrow" id="overhead-h">Nothing overhead right now</p>
+              <p className="om-sub" style={{ margin: 0 }}>None of {d.totalTracked} tracked objects are above your horizon this moment. Check back, or open Sky to scan a direction.</p>
+            </div>
+          )}
+          {d.status === "ready" && (
+            <>
+              <p className="om-eyebrow" id="overhead-h">{d.objects.length} of {d.totalTracked} objects above the horizon</p>
+              {d.objects.slice(0, 12).map((o) => <OverheadRow key={o.key} o={o} />)}
+            </>
+          )}
         </section>
 
         <section className="om-panel" aria-labelledby="pass-h">
-          <div className="om-passhead">
-            <p className="om-eyebrow" id="pass-h" style={{ margin: 0 }}>Tonight&apos;s best pass · watched</p>
-            <span className="meta" style={{ font: "600 12px/1 var(--om-font-mono)", color: "var(--om-action-primary)" }}>{PASS.object}</span>
-          </div>
-          <div className="om-passgrid">
-            <div className="om-passcell"><div className="k">Rise</div><div className="v">{PASS.rise}</div></div>
-            <div className="om-passcell"><div className="k">Max {PASS.maxEl}</div><div className="v" style={{ color: "var(--om-action-primary)" }}>{PASS.max}</div></div>
-            <div className="om-passcell"><div className="k">Set</div><div className="v">{PASS.set}</div></div>
-          </div>
-          <p className="om-sub" style={{ margin: "12px 0 0", fontSize: 13 }}>
-            {PASS.dir} · {PASS.sunlit ? "sunlit — may be visible" : "in shadow"}. Times are modelled; visibility is not guaranteed.
+          <p className="om-eyebrow" id="pass-h">Tonight&apos;s passes · watched</p>
+          <p className="om-sub" style={{ margin: 0 }}>
+            Pass predictions (rise / max / set) arrive with the pass solver. Save and watch an
+            object to track it here. Times will be modelled — visibility is never guaranteed.
           </p>
         </section>
 
         <button className="om-cta" type="button">Open Sky →</button>
-        <button className="om-cta secondary" type="button">See all passes</button>
+        <button className="om-cta secondary" type="button">Browse the catalogue</button>
 
         <p className="om-sub" style={{ marginTop: 24, fontSize: 12, color: "var(--om-text-muted)" }}>
-          Preview slice on fixtures. Live elements, propagation and passes arrive with the orbital
-          engine (P2–P3). OrbitMark shows modelled positions only — never &ldquo;detects&rdquo; objects.
+          Live: positions are modelled on-device from {d.source} elements. OrbitMark shows modelled
+          positions only — it never &ldquo;detects&rdquo; objects, and your precise location stays on your device.
         </p>
       </main>
 
       <nav className="om-tabs" aria-label="Primary">
-        {[
-          { id: "tonight", label: "Tonight" },
-          { id: "sky", label: "Sky" },
-          { id: "catalog", label: "Catalog" },
-          { id: "passes", label: "Passes" },
-          { id: "settings", label: "Settings" },
-        ].map((t) => (
-          <button key={t.id} className="om-tab" type="button"
-            aria-current={tab === t.id ? "page" : undefined} onClick={() => setTab(t.id)}>
+        {[{ id: "tonight", label: "Tonight" }, { id: "sky", label: "Sky" }, { id: "catalog", label: "Catalog" }, { id: "passes", label: "Passes" }, { id: "settings", label: "Settings" }].map((t) => (
+          <button key={t.id} className="om-tab" type="button" aria-current={tab === t.id ? "page" : undefined} onClick={() => setTab(t.id)}>
             <TabIcon id={t.id} />
             {t.label}
           </button>
