@@ -3,9 +3,27 @@
  * Derives perigee/apogee altitude, eccentricity, period and inclination from the satrec.
  * Decay is a coarse modelled flag (low perigee), never a precise re-entry time/place.
  */
-import { twoline2satrec } from "satellite.js";
+import { twoline2satrec, propagate, gstime, eciToGeodetic, type EciVec3 } from "satellite.js";
 
 const R_EARTH_KM = 6378.137;
+
+export interface TrackPoint { lon: number; lat: number; }
+
+/** Ground track (lon/lat degrees) over one orbital period from `from` — for the orbit viz (Idea 5). */
+export function groundTrack(tle1: string, tle2: string, from: Date, periodMin: number, steps = 96): TrackPoint[] {
+  const s = twoline2satrec(tle1, tle2);
+  const pts: TrackPoint[] = [];
+  const period = Number.isFinite(periodMin) && periodMin > 0 ? periodMin : 95;
+  for (let i = 0; i <= steps; i++) {
+    const when = new Date(from.getTime() + (i * period * 60_000) / steps);
+    const pv = propagate(s, when);
+    const pos = pv.position as EciVec3<number> | false | undefined;
+    if (!pos) continue;
+    const g = eciToGeodetic(pos, gstime(when));
+    pts.push({ lon: (g.longitude * 180) / Math.PI, lat: (g.latitude * 180) / Math.PI });
+  }
+  return pts;
+}
 
 export interface OrbitParams {
   perigeeKm: number;

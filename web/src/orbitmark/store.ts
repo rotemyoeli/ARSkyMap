@@ -36,6 +36,33 @@ let cache = read();
 function snapshot() { return cache; }
 function refresh() { cache = read(); }
 
+// ---- Observations (Idea 2: observed vs modelled) ----
+export interface Observation {
+  objectKey: string;
+  name: string;
+  modelledUtc: string;   // modelled reference instant (e.g. pass max)
+  observedUtc: string;   // when the user said "I saw it"
+  residualSec: number;   // observed - modelled, seconds (the honesty feedback)
+}
+const OBS_KEY = "orbitmark.observations.v1";
+function readObs(): Observation[] { try { return JSON.parse(localStorage.getItem(OBS_KEY) || "[]"); } catch { return []; } }
+function writeObs(arr: Observation[]) { localStorage.setItem(OBS_KEY, JSON.stringify(arr)); listeners.forEach((l) => l()); }
+let obsCache = readObs();
+function obsSnapshot() { return obsCache; }
+function refreshObs() { obsCache = readObs(); }
+
+export function useObservations() {
+  const observations = useSyncExternalStore(subscribe, obsSnapshot);
+  const log = useCallback((objectKey: string, name: string, modelledUtc: string) => {
+    const observedUtc = new Date().toISOString();
+    const residualSec = Math.round((Date.now() - new Date(modelledUtc).getTime()) / 1000);
+    const all = [{ objectKey, name, modelledUtc, observedUtc, residualSec }, ...readObs()].slice(0, 100);
+    writeObs(all); refreshObs();
+  }, []);
+  const lastFor = (objectKey: string) => observations.find((o) => o.objectKey === objectKey) ?? null;
+  return { observations, log, lastFor };
+}
+
 export function useCatalogStore() {
   const data = useSyncExternalStore(subscribe, snapshot);
 

@@ -7,10 +7,10 @@
 import { useMemo, useState } from "react";
 import { type TleObject } from "../orbital/catalog";
 import { lookAngle } from "../orbital/propagate";
-import { altitudeBandKm } from "../orbital/orbit";
+import { altitudeBandKm, groundTrack } from "../orbital/orbit";
 import { Marker } from "./Tonight";
 import { type CatalogCore } from "./useCatalog";
-import { useCatalogStore, isAnalystRange } from "./store";
+import { useCatalogStore, isAnalystRange, useObservations, objectKey } from "./store";
 
 const KIND_LABEL = { active: "Active payload", inactive: "Inactive payload", rocket: "Rocket body", debris: "Catalogued debris" } as const;
 
@@ -199,6 +199,40 @@ export function CatalogScreen({ core, onOpen }: { core: CatalogCore; onOpen: (o:
   );
 }
 
+function GroundTrack({ o, core }: { o: TleObject; core: CatalogCore }) {
+  const u = core.confidenceFor(o).u;
+  const periodMin = core.orbitFor(o)?.periodMin ?? 95;
+  const pts = useMemo(() => groundTrack(o.tleLine1, o.tleLine2, core.now, periodMin), [o.noradId, core.now, periodMin]);
+  if (pts.length < 2) return null;
+  const X = (lon: number) => lon + 180;
+  const Y = (lat: number) => 90 - lat;
+  const segs: string[] = [];
+  let cur = `M ${X(pts[0].lon).toFixed(1)} ${Y(pts[0].lat).toFixed(1)}`;
+  for (let i = 1; i < pts.length; i++) {
+    if (Math.abs(pts[i].lon - pts[i - 1].lon) > 180) { segs.push(cur); cur = `M ${X(pts[i].lon).toFixed(1)} ${Y(pts[i].lat).toFixed(1)}`; }
+    else cur += ` L ${X(pts[i].lon).toFixed(1)} ${Y(pts[i].lat).toFixed(1)}`;
+  }
+  segs.push(cur);
+  const tube = (1 + 5 * u).toFixed(1);
+  return (
+    <section className="om-panel">
+      <p className="om-eyebrow">Orbit track · uncertainty widens with element age</p>
+      <svg viewBox="0 0 360 180" width="100%" role="img" aria-label="Modelled ground track of the orbit over one revolution, with an along-track uncertainty band" style={{ background: "var(--om-bg-panel-deep)", borderRadius: 12, display: "block" }}>
+        <rect x="0.5" y="0.5" width="359" height="179" fill="none" stroke="var(--om-border-hairline)" />
+        <line x1="0" y1="90" x2="360" y2="90" stroke="var(--om-border-hairline)" />
+        <line x1="180" y1="0" x2="180" y2="180" stroke="var(--om-border-hairline)" />
+        {segs.map((d, i) => <path key={`t${i}`} d={d} fill="none" stroke="var(--om-action-primary)" strokeOpacity={0.18} strokeWidth={tube} strokeLinecap="round" />)}
+        {segs.map((d, i) => <path key={`l${i}`} d={d} fill="none" stroke="var(--om-action-primary)" strokeOpacity={0.9} strokeWidth="0.8" />)}
+        <circle cx={X(pts[0].lon)} cy={Y(pts[0].lat)} r="2.6" fill="var(--om-action-primary)" />
+      </svg>
+      <p className="om-sub" style={{ margin: "8px 0 0", fontSize: 12 }}>
+        Modelled ground track over one orbit (equirectangular world). The faint band is the along-track position
+        uncertainty — it widens as the elements age. Most maps draw a confident line; this one shows the doubt.
+      </p>
+    </section>
+  );
+}
+
 export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogCore; onBack: () => void }) {
   const store = useCatalogStore();
   const entry = store.byId(o.noradId);
@@ -266,6 +300,7 @@ export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogC
           )}
         </section>
       )}
+      <GroundTrack o={o} core={core} />
       <section className="om-panel">
         <p className="om-eyebrow">Save &amp; annotate · the wedge</p>
         {identityLimited ? (
@@ -338,6 +373,18 @@ function PassReminder({ name, rise }: { name: string; rise: Date }) {
   return <button type="button" className="om-cta secondary" style={{ marginTop: 8 }} onClick={set}>Remind me ~5 min before</button>;
 }
 
+function Sighting({ noradId, name, modelledUtc }: { noradId: number; name: string; modelledUtc: string }) {
+  const { log, lastFor } = useObservations();
+  const last = lastFor(objectKey(noradId));
+  const fmtResidual = (s: number) => `${s >= 0 ? "+" : "−"}${Math.abs(s)} s vs modelled`;
+  return (
+    <div style={{ marginTop: 8 }}>
+      <button type="button" className="om-cta secondary" style={{ margin: 0 }} onClick={() => log(objectKey(noradId), name, modelledUtc)}>👁 I saw it now</button>
+      {last && <p className="om-sub" style={{ margin: "8px 0 0", fontSize: 12, color: "var(--om-success)" }}>Logged: you observed it <b>{fmtResidual(last.residualSec)}</b> max. Your sightings help calibrate confidence.</p>}
+    </div>
+  );
+}
+
 export function PassesScreen({ core }: { core: CatalogCore }) {
   const store = useCatalogStore();
   const watched = store.entries.filter((e) => e.watched);
@@ -367,6 +414,7 @@ export function PassesScreen({ core }: { core: CatalogCore }) {
             <div className="om-passcell"><div className="k">Set</div><div className="v">{t(p.set)}</div></div>
           </div>
           <PassReminder name={p.o.name} rise={p.rise} />
+          <Sighting noradId={p.o.noradId} name={p.o.name} modelledUtc={p.max.toISOString()} />
         </section>
       ))}
     </>
