@@ -82,6 +82,7 @@ export function TonightView({ core, onOpen, onTab }: { core: CatalogCore; onOpen
     .filter((x) => x.look?.aboveHorizon)
     .sort((a, b) => (b.look!.elevationDeg - a.look!.elevationDeg)), [core]);
   const visCount = overhead.filter((x) => x.vis?.mayBeVisible).length;
+  const brightCount = overhead.filter((x) => x.vis?.mayBeVisible && x.vis.magnitude != null && x.vis.magnitude < 7).length;
   return (
     <>
       <p className="om-eyebrow">Tonight</p>
@@ -98,7 +99,13 @@ export function TonightView({ core, onOpen, onTab }: { core: CatalogCore; onOpen
             <Row key={o.noradId} core={core} o={o} onOpen={onOpen} badge={vis?.mayBeVisible ? <VisibleBadge /> : undefined}
               right={<>{look!.elevationDeg.toFixed(0)}° {core.compassOf(look!.azimuthDeg)}<br /><span style={{ color: "var(--om-text-muted)", fontWeight: 500 }}>{Math.round(look!.rangeKm).toLocaleString()} km</span></>} />
           ))}
-          <p className="om-sub" style={{ fontSize: 12, marginTop: 12 }}>&ldquo;May be visible&rdquo; = sunlit + your sky dark enough + above horizon (modelled). Brightness isn&apos;t computed yet, so visibility is never guaranteed.</p>
+          {visCount > 0 && (
+            <p className="om-sub" style={{ fontSize: 12, marginTop: 12, color: brightCount ? "var(--om-warning)" : undefined }}>
+              🌃 Dark-sky lens: <b>{brightCount}</b> of the {visCount} visible are modelled brighter than the
+              IAU naked-eye limit (mag&nbsp;7) — the threshold above which satellites disturb a natural sky.
+            </p>
+          )}
+          <p className="om-sub" style={{ fontSize: 12, marginTop: 8 }}>&ldquo;May be visible&rdquo; = sunlit + your sky dark enough + above horizon. Brightness is a coarse modelled estimate, so visibility is never guaranteed.</p>
         </>}
       </section>
 
@@ -230,6 +237,7 @@ export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogC
           {cell("Sunlit", vis ? (vis.sunlit ? "yes" : "in Earth's shadow") : "—")}
           {cell("Your sky", vis ? (vis.observerDark ? `dark (Sun ${vis.sunElevationDeg.toFixed(0)}°)` : `too bright (Sun ${vis.sunElevationDeg.toFixed(0)}°)`) : "—")}
           {cell("May be visible", vis ? (vis.mayBeVisible ? "yes — modelled" : "no") : "—")}
+          {cell("Brightness", vis && vis.magnitude != null ? `~mag ${vis.magnitude.toFixed(1)} · ${vis.brightnessClass}` : "—")}
         </div>
         <p className="om-sub" style={{ marginTop: 12, fontSize: 12 }}>
           <span style={{ color: CONF_COLOR[conf.level] }}>Confidence: {conf.level}</span> — {conf.label}.

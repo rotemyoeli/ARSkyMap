@@ -59,6 +59,18 @@ export function confidenceFromAge(ageDays: number): Confidence {
 
 const DEFAULT_OBSERVER: Observer = { latitudeDeg: 32.0853, longitudeDeg: 34.7818, heightKm: 0.04 };
 
+/** Coarse standard magnitude (apparent mag at 1000 km, phase 0) per object class. Big bright
+ * objects (ISS) are negative; debris is faint. Mallama-style ~5.9 for Starlink. */
+export function stdMagFor(o: TleObject): number {
+  const n = o.name.toUpperCase();
+  if (o.noradId === 25544 || n.includes("ZARYA") || n.includes("ISS")) return -1.8;
+  if (n.includes("STARLINK")) return 5.9;
+  const t = o.objectType.toUpperCase();
+  if (t.includes("DEB")) return 7.0;
+  if (t.includes("R/B") || t.includes("ROCKET")) return 3.5;
+  return 4.0;
+}
+
 function fmtUtc(d: Date) { return d.toISOString().slice(0, 16).replace("T", " ") + " UTC"; }
 function ageLabel(iso: string | null): string | null {
   if (!iso) return null;
@@ -107,7 +119,7 @@ export function useCatalog(): CatalogCore {
     kindOf: (o) => markerKind(o.objectType),
     compassOf: compass,
     epochFor: (o) => tleEpoch(o.tleLine1),
-    visibilityFor: (o) => satVisibility(o.tleLine1, o.tleLine2, observer, now),
+    visibilityFor: (o) => satVisibility(o.tleLine1, o.tleLine2, observer, now, stdMagFor(o)),
     confidenceFor: (o) => {
       const ep = tleEpoch(o.tleLine1);
       const ageDays = ep ? (now.getTime() - ep.getTime()) / 86_400_000 : 3;
