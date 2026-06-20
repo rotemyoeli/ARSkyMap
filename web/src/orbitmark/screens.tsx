@@ -103,7 +103,7 @@ export function TonightView({ core, onOpen, onTab }: { core: CatalogCore; onOpen
           {visCount > 0 && (
             <p className="om-sub" style={{ fontSize: 12, marginTop: 12, color: brightCount ? "var(--om-warning)" : undefined }}>
               🌃 Dark-sky lens: <b>{brightCount}</b> of the {visCount} visible are modelled brighter than the
-              IAU naked-eye limit (mag&nbsp;7) — the threshold above which satellites disturb a natural sky.
+              IAU naked-eye limit (mag&nbsp;7; IAU CPS / MNRAS L15) — the threshold above which satellites disturb a natural sky.
             </p>
           )}
           <p className="om-sub" style={{ fontSize: 12, marginTop: 8 }}>&ldquo;May be visible&rdquo; = sunlit + your sky dark enough + above horizon. Brightness is a coarse modelled estimate, so visibility is never guaranteed.</p>
@@ -279,8 +279,8 @@ export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogC
           <span style={{ color: CONF_COLOR[conf.level] }}>Confidence: {conf.level}</span> — {conf.label}.
           Geometric, modelled for {core.calculatedForUtc}; the uncertainty ring grows with element age.
           Visibility = sunlit + your sky dark + above horizon (modelled; simplified cylindrical Earth-shadow
-          test, darkness = Sun below −6°); brightness/magnitude not yet computed, so &ldquo;may be visible&rdquo;
-          is never a guarantee.
+          test, darkness = Sun below −6°). Brightness is a coarse class-based modelled estimate (no per-object
+          size/BRDF), so &ldquo;may be visible&rdquo; is never a guarantee.
         </p>
       </section>
       {orbit && (
@@ -380,7 +380,7 @@ function Sighting({ noradId, name, modelledUtc }: { noradId: number; name: strin
   return (
     <div style={{ marginTop: 8 }}>
       <button type="button" className="om-cta secondary" style={{ margin: 0 }} onClick={() => log(objectKey(noradId), name, modelledUtc)}>👁 I saw it now</button>
-      {last && <p className="om-sub" style={{ margin: "8px 0 0", fontSize: 12, color: "var(--om-success)" }}>Logged: you observed it <b>{fmtResidual(last.residualSec)}</b> max. Your sightings help calibrate confidence.</p>}
+      {last && <p className="om-sub" style={{ margin: "8px 0 0", fontSize: 12, color: "var(--om-success)" }}>Logged locally: you observed it <b>{fmtResidual(last.residualSec)}</b> max — your record of how close the model was. (Confidence today is from element age only.)</p>}
     </div>
   );
 }
