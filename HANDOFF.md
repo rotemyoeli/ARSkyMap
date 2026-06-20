@@ -70,10 +70,23 @@ Health check: `GET http://localhost:8000/api/health`.
 - Both services are also GitHub-connected at the source level (`serviceConnect`,
   root dirs `web`→`/web`, `backend`→`/backend`), so each builds from its subdir and
   reads that subdir's `railway.toml`. Railway GitHub App is installed on `rotemyoeli`.
-- Railway project has **3 components**: Postgres plugin, `backend` (root `/backend`,
-  NIXPACKS, healthcheck `/api/health`), `web` (root `/web`, DOCKERFILE builder).
-  `DATABASE_URL` is auto-injected into backend; set `DEV_MODE`, `SECRET_KEY` as
-  service variables.
+- Railway project has **3 services** (all live 2026-06-20):
+  - **Postgres** (`postgres-ssl:18`, svc `f08d7aa6-d504-4c30-b3ed-83135c2da650`,
+    volume `postgres-volume` at `/var/lib/postgresql/data`). Public TCP proxy
+    available via its `DATABASE_PUBLIC_URL` for external `psql`/ingest.
+  - **backend** (root `/backend`, NIXPACKS, healthcheck `/api/health`).
+    `DATABASE_URL` references `${{Postgres.DATABASE_URL}}` (private net). Other vars:
+    `DEV_MODE=false`, `SECRET_KEY` set. `preDeployCommand = "flask init-db"` creates
+    tables on each deploy (idempotent).
+  - **web** (root `/web`, DOCKERFILE). Build-time `VITE_API_BASE` =
+    `https://backend-production-f7c19.up.railway.app/api`, baked into the bundle via
+    `ARG VITE_API_BASE` in `web/Dockerfile` (without the ARG it falls back to
+    localhost and silently uses the CelesTrak fallback instead of the backend).
+- **Data:** backend serves 74 objects (ISS #25544 + Cosmos-2251 debris) from
+  Postgres. To (re)seed: temporarily set backend `preDeployCommand = "flask ingest"`,
+  redeploy, then restore to `flask init-db`. (Future: nightly ingest cron.)
+- **CORS:** flask-cors is open (`CORS(app)`); verified web origin → backend GET/OPTIONS
+  return 200 with matching `Access-Control-Allow-Origin`.
 - Manual deploy still possible via `railway up` from a service subdir (CLI linked:
   project `ARSkyMap`, env `production`). Key IDs: project
   `9b32c7de-c358-49ed-9be6-22f7caa05c0a`, env(production)
