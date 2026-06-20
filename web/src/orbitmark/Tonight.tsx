@@ -62,7 +62,7 @@ export default function Tonight() {
         <h1 className="om-h1">What&apos;s overhead now</h1>
         <p className="om-sub">Modelled positions for {d.locationLabel} · candidates, never a single certain object.</p>
 
-        <div className={`om-truth${stale ? " warn" : ""}`} aria-label="Data status">
+        <div className={`om-truth${stale ? " warn" : ""}`} aria-label="Data status" aria-live="polite">
           <span><span className="om-dot" style={{ background: stale ? "var(--om-warning)" : "var(--om-success)" }} />
             elements <b>{d.elementAge ? `updated ${d.elementAge}` : "freshness unknown"}</b></span>
           <span>source <b>{d.source}</b></span>

@@ -1,18 +1,22 @@
 version: 1
 project: OrbitMark
-phase: P1
+phase: P2
 current_work_package: null
 status: READY
-branch: null
+branch: develop
 worktree: null
-last_completed: WP-P0-001
-last_gate: {gate: G-P0, decision: PASS, record: DOCS/gates/GATE_G-P0.md}
-last_evidence: artifacts/evidence/P0/WP-P0-001/20260620T071505Z
+last_completed: WP-P1-001
+last_gate: {gate: G-P1, decision: PASS, record: DOCS/gates/GATE_G-P1.md}
+last_evidence: DOCS/gates/GATE_G-P1.md
 retry_counts: {}
 external_blockers:
   - BLK-001
   - BLK-002
 ops_blockers:
-  - BLK-003  # MITIGATED: main branch protection enabled; deploy/CI reconciliation owned by WP-P1-001
-next_action: Run orbitmark-autopilot to begin WP-P1-001 (Foundation); install pnpm first
-updated_at: 2026-06-20T07:20:00Z
+  - BLK-003  # MITIGATED (main branch protection)
+notes: >-
+  Autonomous run authorised by Product Owner to self-approve gate transitions and proceed
+  P1->P2->P3->P4->P5->P7 to MVP. Working on develop; deploy to Railway staging via railway up
+  after each phase. Foundation evolved from existing web/backend per ADR-0002.
+next_action: WP-P2-001 — formalise OMM ingestion identity + immutable packages around the existing backend ingest
+updated_at: 2026-06-20T08:00:00Z

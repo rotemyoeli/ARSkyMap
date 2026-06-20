@@ -10,18 +10,19 @@ work_packages:
     gate_decision: PASS
     evidence: artifacts/evidence/P0/WP-P0-001/20260620T071505Z
   - id: WP-P1-001
-    title: Greenfield monorepo and clean launch foundation
+    title: Foundation — live Tonight + on-device engine wiring (ADR-0002)
     phase: P1
     priority: 2
     dependencies: [WP-P0-001]
-    status: READY
+    status: DONE
     gate: G-P1
+    gate_decision: PASS
   - id: WP-P2-001
     title: OMM ingestion, identity and immutable package lifecycle
     phase: P2
     priority: 3
     dependencies: [WP-P1-001]
-    status: BACKLOG
+    status: READY
     gate: G-P2
   - id: WP-P3-001
     title: Orbital engine, independent vectors and working-set scheduler
