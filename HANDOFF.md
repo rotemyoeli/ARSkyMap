@@ -55,21 +55,31 @@ cd web; npm install; npm run dev
 ```
 Health check: `GET http://localhost:8000/api/health`.
 
-## Git → Railway
-- GitHub repo: `rotemyoeli/ARSkyMap`. **Both Railway services are GitHub-connected**
-  to `rotemyoeli/ARSkyMap@main` (set 2026-06-20 via API `serviceConnect`):
-  **push to `main` auto-deploys both.** Root directories: `web` → `/web`,
-  `backend` → `/backend` (so each builds from its subdir and reads that subdir's
-  `railway.toml`). The Railway GitHub App is installed on the `rotemyoeli` account.
-- Railway project has **3 components**: Postgres plugin, `backend` service
-  (root `/backend`, NIXPACKS, healthcheck `/api/health`), `web` service
-  (root `/web`, DOCKERFILE builder). `DATABASE_URL` is injected into the backend
-  automatically; set `DEV_MODE`, `SECRET_KEY` as service variables.
+## Git → Railway (push-to-deploy — WORKING)
+- GitHub repo: `rotemyoeli/ARSkyMap`. **Push to `main` auto-deploys both services**
+  (the exact pushed commit). Verified end-to-end 2026-06-20 (commit `fc62c4b`).
+- **Mechanism:** `.github/workflows/deploy.yml` runs on push to `main` and calls
+  Railway's API (`serviceInstanceDeployV2` with `commitSha: github.sha`) for each
+  service, building the pushed commit from the connected source. We use Actions
+  (not Railway's native push trigger) because creating a Railway deployment trigger
+  requires a Railway *user account* with its GitHub identity linked to the repo —
+  a browser OAuth step that can't be done headlessly. Repo secret
+  `RAILWAY_API_TOKEN` (Railway project token) authenticates the workflow.
+  - **IMPORTANT:** always pass `commitSha`. Without it, Railway rebuilds its stale
+    cached source HEAD instead of the new code.
+- Both services are also GitHub-connected at the source level (`serviceConnect`,
+  root dirs `web`→`/web`, `backend`→`/backend`), so each builds from its subdir and
+  reads that subdir's `railway.toml`. Railway GitHub App is installed on `rotemyoeli`.
+- Railway project has **3 components**: Postgres plugin, `backend` (root `/backend`,
+  NIXPACKS, healthcheck `/api/health`), `web` (root `/web`, DOCKERFILE builder).
+  `DATABASE_URL` is auto-injected into backend; set `DEV_MODE`, `SECRET_KEY` as
+  service variables.
 - Manual deploy still possible via `railway up` from a service subdir (CLI linked:
-  project `ARSkyMap`, env `production`).
-- **`web` has no public domain yet** (`serviceDomains` empty) — generate with
-  `railway domain --service web` once a build is green. Backend domain:
-  `backend-production-f7c19.up.railway.app`.
+  project `ARSkyMap`, env `production`). Key IDs: project
+  `9b32c7de-c358-49ed-9be6-22f7caa05c0a`, env(production)
+  `1afb53a6-a7bb-4cbf-8c1e-2cfa9a47d1af`, web svc
+  `00beac61-34f6-46db-8b1c-06a7ab12efbd`, backend svc
+  `cea73519-0995-4702-b146-1cf12b7a6f08`.
 
 ## Current state
 - M(-1) **Infra scaffold** — DONE: monorepo, Flask factory + `/api/health` +
@@ -86,18 +96,14 @@ Health check: `GET http://localhost:8000/api/health`.
     1 Hz Alt/Az table for ISS + a debris object with observer lat/lon + UTC for the
     GATE comparison. `npm run build` passes.
 
-## In flight
-- **`web` deploy hardening — COMMITTED (`1771e0c`):** web build switched from
-  flaky Nixpacks to a committed `Dockerfile` (`node:20-alpine`, `npm ci` →
-  `vite build` → `npm run preview`). Files: `web/Dockerfile`, `web/railway.toml`
-  (`builder = "DOCKERFILE"`). `vite.config.ts` has `preview.allowedHosts: true`.
-  - **Live prod `web` already runs this Dockerfile** (deploy `11fddc7f`, green,
-    2026-06-19). The commit just persisted the previously-uncommitted local files.
-  - **2026-06-20 redeploy via `railway up` failed twice** — both failed in seconds
-    at "scheduling build on Metal builder `builder-zchmak`" with zero build output.
-    That's a Railway builder-infra flake (or build-usage limit), NOT our config.
-    Last good deploy `11fddc7f` kept serving; prod unaffected. **Retry `railway up`
-    later** (likely lands on a healthy builder).
+## Deploy environment — DONE (2026-06-20)
+- **Full working Railway environment is live and push-deployed.** Both services
+  build green from the connected repo on push to `main` (see "Git → Railway").
+- `web` builds via committed `Dockerfile` (`node:20-alpine`, `npm ci` →
+  `vite build` → `npm run preview`); `vite.config.ts` has
+  `preview.allowedHosts: true`. `backend` builds via NIXPACKS.
+- Earlier `railway up` "scheduling build on Metal builder" failures were transient
+  Railway builder-infra flakes; current builds are green.
 
 ## Next (verify-gated roadmap)
 - **M0 GATE (do this next):** run web + backend locally, open the app, allow
