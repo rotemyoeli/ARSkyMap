@@ -1,7 +1,7 @@
-import Tonight from "./orbitmark/Tonight";
+import OrbitMarkApp from "./orbitmark/OrbitMarkApp";
 
-// OrbitMark visible UI slice: the Tonight (S-03) screen on fixtures. The M0 Alt/Az
-// spike (orbital/*) is retained in the repo and folds into the P1 monorepo later.
+// OrbitMark manual product loop (P5/M1): Tonight · Manual Sky · Catalog · Object detail
+// · Passes · Settings, on live on-device propagation with a local-first catalogue.
 export default function App() {
-  return <Tonight />;
+  return <OrbitMarkApp />;
 }
