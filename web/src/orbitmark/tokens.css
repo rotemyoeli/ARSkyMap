@@ -63,6 +63,7 @@ input, textarea, select { font-size: 16px; }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .om-ring { animation: none !important; }
 }
 
 /* ---- OrbitMark components (Tonight slice) ---- */
@@ -123,7 +124,7 @@ input, textarea, select { font-size: 16px; }
 .om-passcell .k { font: 600 10px/1 var(--om-font-ui); letter-spacing: 0.1em; text-transform: uppercase; color: var(--om-text-muted); }
 .om-passcell .v { font: 600 15px/1.3 var(--om-font-mono); margin-top: 4px; }
 .om-tabs {
-  position: fixed; bottom: 0; left: 0; right: 0; height: 64px; max-width: 480px; margin: 0 auto;
+  position: fixed; bottom: 0; left: 0; right: 0; min-height: 64px; max-width: 480px; margin: 0 auto;
   display: grid; grid-template-columns: repeat(6, 1fr);
   background: rgba(10,26,40,0.92); backdrop-filter: blur(12px); border-top: 1px solid var(--om-border-hairline);
 }

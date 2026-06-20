@@ -36,7 +36,7 @@ export default function OrbitMarkApp() {
 
   return (
     <div className="om-shell">
-      <div className="om-statusbar"><span>ORBITMARK</span><span>● MODELLED</span></div>
+      <div className="om-statusbar"><span>ORBITMARK</span><span><span aria-hidden="true">● </span>MODELLED</span></div>
       <main className="om-content">
         {selected ? (
           <ObjectDetail o={selected} core={core} onBack={back} />
@@ -54,7 +54,7 @@ export default function OrbitMarkApp() {
           <SettingsScreen core={core} />
         )}
       </main>
-      <nav className="om-tabs" aria-label="Primary">
+      <nav className="om-tabs" aria-label="OrbitMark main navigation">
         {TABS.map((t) => (
           <button key={t.id} className="om-tab" type="button" aria-current={!selected && tab === t.id ? "page" : undefined} onClick={() => goTab(t.id)}>
             <TabIcon id={t.id} />{t.label}

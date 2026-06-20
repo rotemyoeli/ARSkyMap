@@ -12,6 +12,7 @@ from app.models.satellite import Satellite
 bp = Blueprint("satellites", __name__, url_prefix="/api/satellites")
 
 MAX_LIMIT = 500
+ALLOWED_TYPES = {"PAYLOAD", "ROCKET BODY", "DEBRIS", "UNKNOWN"}
 
 
 @bp.get("")
@@ -23,6 +24,10 @@ def list_satellites():
       limit — optional cap (default 100, max 500)
     """
     obj_type = request.args.get("type")
+    if obj_type is not None:
+        obj_type = obj_type.upper()
+        if obj_type not in ALLOWED_TYPES:  # allowlist (security review SP-4)
+            return jsonify(error="invalid type", allowed=sorted(ALLOWED_TYPES)), 400
     try:
         limit = min(int(request.args.get("limit", 100)), MAX_LIMIT)
     except ValueError:
@@ -30,7 +35,7 @@ def list_satellites():
 
     q = Satellite.query
     if obj_type:
-        q = q.filter(Satellite.object_type == obj_type.upper())
+        q = q.filter(Satellite.object_type == obj_type)
     rows = q.order_by(Satellite.norad_id).limit(limit).all()
 
     items = [

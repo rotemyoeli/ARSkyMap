@@ -11,7 +11,17 @@ def create_app(config_class=Config) -> Flask:
 
     db.init_app(app)
     migrate.init_app(app, db)
-    CORS(app)
+    # Scope CORS to known web origins instead of a wildcard (security review SP-2).
+    # The public read-only catalogue is fine cross-origin; the authenticated catalog
+    # endpoint must not be wildcard. Extra origins via CORS_ORIGINS (comma-separated).
+    import os
+
+    default_origins = [
+        "https://web-production-1340.up.railway.app",
+        "http://localhost:5173",
+    ]
+    extra = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
+    CORS(app, origins=default_origins + extra)
 
     from .api.health import bp as health_bp
     from .api.catalog import bp as catalog_bp

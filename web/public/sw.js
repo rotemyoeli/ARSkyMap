@@ -7,7 +7,11 @@ self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
 
 self.addEventListener("fetch", (e) => {
   const req = e.request;
-  if (req.method !== "GET" || new URL(req.url).protocol !== "https:") return;
+  const url = new URL(req.url);
+  if (req.method !== "GET" || url.protocol !== "https:") return;
+  // Don't SW-cache dynamic orbital data — it has its own freshness-aware localStorage cache,
+  // and SW-caching it risks serving silently-stale TLEs (security review SP-3).
+  if (url.pathname.includes("/api/") || url.hostname.includes("celestrak")) return;
   e.respondWith(
     fetch(req)
       .then((res) => {

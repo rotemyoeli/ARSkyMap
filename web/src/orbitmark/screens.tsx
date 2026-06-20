@@ -18,7 +18,7 @@ export function DataTruth({ core }: { core: CatalogCore }) {
   const stale = cached || (core.elementAge != null && /\d+ d ago/.test(core.elementAge));
   return (
     <div className={`om-truth${stale ? " warn" : ""}`} aria-label="Data status" aria-live="polite">
-      <span><span className="om-dot" style={{ background: stale ? "var(--om-warning)" : "var(--om-success)" }} />
+      <span><span className="om-dot" role="img" aria-label={cached ? "offline, cached elements" : stale ? "stale elements" : "fresh elements"} style={{ background: stale ? "var(--om-warning)" : "var(--om-success)" }} />
         elements <b>{core.elementAge ? `updated ${core.elementAge}` : "freshness unknown"}</b></span>
       <span>source <b>{cached ? "cached (offline)" : core.source}</b></span>
       <span>calculated for <b>{core.calculatedForUtc}</b></span>
@@ -37,7 +37,7 @@ function Row({ core, o, onOpen, right, badge }: { core: CatalogCore; o: TleObjec
       <Marker kind={core.kindOf(o)} watched={watched} uncertainty={conf.u} />
       <span style={{ minWidth: 0 }}>
         <span className="name">{o.name}{badge}</span><br />
-        <span className="meta">{KIND_LABEL[core.kindOf(o)]} · #{o.noradId} · <span style={{ color: CONF_COLOR[conf.level] }}>conf {conf.level}</span></span>
+        <span className="meta">{KIND_LABEL[core.kindOf(o)]} · #{o.noradId} · <span style={{ color: CONF_COLOR[conf.level] }} aria-label={`confidence ${conf.level}: ${conf.label}`}>conf {conf.level}</span></span>
       </span>
       <span className="om-sep">{right}</span>
     </button>
@@ -56,7 +56,10 @@ function StarlinkTrains({ rows, core, onOpen }: { rows: OverheadRow[]; core: Cat
   const sl = rows.filter((r) => r.look && r.o.name.toUpperCase().startsWith("STARLINK"));
   if (sl.length < 2) return null;
   const visible = sl.filter((r) => r.vis?.mayBeVisible).length;
-  const meanAz = sl.reduce((a, r) => a + (r.look!.azimuthDeg), 0) / sl.length;
+  // Circular mean of azimuth (atan2 of summed sin/cos) — a plain mean is wrong across 0/360°.
+  const sumSin = sl.reduce((a, r) => a + Math.sin((r.look!.azimuthDeg * Math.PI) / 180), 0);
+  const sumCos = sl.reduce((a, r) => a + Math.cos((r.look!.azimuthDeg * Math.PI) / 180), 0);
+  const meanAz = ((Math.atan2(sumSin, sumCos) * 180) / Math.PI + 360) % 360;
   return (
     <section className="om-panel" aria-labelledby="sl-h">
       <p className="om-eyebrow" id="sl-h">Starlink overhead · {sl.length} now{visible ? ` · ${visible} may be visible` : ""}</p>
@@ -166,7 +169,7 @@ export function CatalogScreen({ core, onOpen }: { core: CatalogCore; onOpen: (o:
       <h1 className="om-h1">Objects {savedOnly ? "you saved" : "in the catalogue"}</h1>
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or NORAD id…" aria-label="Search the catalogue by name or NORAD id"
         style={{ width: "100%", minHeight: 44, borderRadius: 12, border: "1px solid var(--om-border-strong)", background: "var(--om-bg-panel-deep)", color: "var(--om-text-primary)", padding: "0 14px", marginBottom: 12 }} />
-      <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+      <div role="group" aria-label="Catalogue filter" style={{ display: "flex", gap: 8, marginBottom: 8 }}>
         <button type="button" className="om-cta secondary" aria-pressed={!savedOnly} style={{ margin: 0, minHeight: 40, borderColor: !savedOnly ? "var(--om-action-primary)" : undefined }} onClick={() => setSavedOnly(false)}>All ({core.objects.length})</button>
         <button type="button" className="om-cta secondary" aria-pressed={savedOnly} style={{ margin: 0, minHeight: 40, borderColor: savedOnly ? "var(--om-action-primary)" : undefined }} onClick={() => setSavedOnly(true)}>Saved ({store.entries.length})</button>
       </div>
@@ -181,7 +184,7 @@ export function CatalogScreen({ core, onOpen }: { core: CatalogCore; onOpen: (o:
         {list.slice(0, 40).map((o) => {
           const e = store.byId(o.noradId);
           return <Row key={o.noradId} core={core} o={o} onOpen={onOpen}
-            right={e ? <span style={{ color: "var(--om-success)" }}>saved{e.watched ? " ★" : ""}</span> : <span style={{ color: "var(--om-text-muted)" }}>open →</span>} />;
+            right={e ? <span style={{ color: "var(--om-success)" }}>saved{e.watched ? <span aria-label="watched"> ★</span> : ""}</span> : <span style={{ color: "var(--om-text-muted)" }}>open →</span>} />;
         })}
       </section>
     </>
@@ -231,8 +234,9 @@ export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogC
         <p className="om-sub" style={{ marginTop: 12, fontSize: 12 }}>
           <span style={{ color: CONF_COLOR[conf.level] }}>Confidence: {conf.level}</span> — {conf.label}.
           Geometric, modelled for {core.calculatedForUtc}; the uncertainty ring grows with element age.
-          Visibility = sunlit + your sky dark + above horizon (modelled); brightness/magnitude not yet computed,
-          so &ldquo;may be visible&rdquo; is never a guarantee.
+          Visibility = sunlit + your sky dark + above horizon (modelled; simplified cylindrical Earth-shadow
+          test, darkness = Sun below −6°); brightness/magnitude not yet computed, so &ldquo;may be visible&rdquo;
+          is never a guarantee.
         </p>
       </section>
       <section className="om-panel">
@@ -363,7 +367,7 @@ export function LearnScreen() {
         senses or &ldquo;detects&rdquo; an object through your camera. What you see is a calculation, shown as a
         candidate, never a single certain object.
       </LearnCard>
-      <LearnCard title="Why a position is a region, not a point" source="Jankovic 2026, arXiv:2605.19850; Vallado/CelesTrak">
+      <LearnCard title="Why a position is a region, not a point" source="Oltrogge & Vallado, AMOS 2014; Vallado et al., 'Revisiting Spacetrack Report #3' (AIAA 2006-6753); corroborated by Jankovic 2026 (arXiv:2605.19850)">
         Public elements (TLEs) are accurate to roughly a kilometre near their epoch, and the error grows
         — mostly along the orbit track — to tens of kilometres within about a week. That is why our
         uncertainty ring grows as the elements age, and why we show each object&apos;s element age and confidence.
