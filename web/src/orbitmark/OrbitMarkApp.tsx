@@ -6,11 +6,11 @@
 import { useState } from "react";
 import { type TleObject } from "../orbital/catalog";
 import { useCatalog } from "./useCatalog";
-import { TonightView, ManualSky, CatalogScreen, ObjectDetail, PassesScreen, SettingsScreen } from "./screens";
+import { TonightView, ManualSky, CatalogScreen, ObjectDetail, PassesScreen, SettingsScreen, LearnScreen } from "./screens";
 
 const TABS = [
   { id: "tonight", label: "Tonight" }, { id: "sky", label: "Sky" }, { id: "catalog", label: "Catalog" },
-  { id: "passes", label: "Passes" }, { id: "settings", label: "Settings" },
+  { id: "passes", label: "Passes" }, { id: "learn", label: "Learn" }, { id: "settings", label: "Settings" },
 ];
 
 function TabIcon({ id }: { id: string }) {
@@ -20,6 +20,7 @@ function TabIcon({ id }: { id: string }) {
     case "sky": return <svg {...s} viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18" /></svg>;
     case "catalog": return <svg {...s} viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h10" /></svg>;
     case "passes": return <svg {...s} viewBox="0 0 24 24"><path d="M3 17a9 9 0 0 1 18 0" /><circle cx="12" cy="17" r="1.4" fill="currentColor" /></svg>;
+    case "learn": return <svg {...s} viewBox="0 0 24 24"><path d="M4 5h11a3 3 0 0 1 3 3v11a3 3 0 0 0-3-3H4z" /><path d="M20 5h-2a3 3 0 0 0-3 3v11" /></svg>;
     default: return <svg {...s} viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" /><path d="M12 3v3M12 18v3M3 12h3M18 12h3" /></svg>;
   }
 }
@@ -47,6 +48,8 @@ export default function OrbitMarkApp() {
           <CatalogScreen core={core} onOpen={open} />
         ) : tab === "passes" ? (
           <PassesScreen core={core} />
+        ) : tab === "learn" ? (
+          <LearnScreen />
         ) : (
           <SettingsScreen core={core} />
         )}

@@ -47,6 +47,31 @@ function VisibleBadge() {
   return <span style={{ marginLeft: 8, font: "600 10px/1 var(--om-font-ui)", color: "var(--om-success)", border: "1px solid var(--om-success)", borderRadius: 999, padding: "2px 6px" }}>👁 may be visible</span>;
 }
 
+type OverheadRow = { o: TleObject; look: ReturnType<CatalogCore["lookFor"]>; vis: ReturnType<CatalogCore["visibilityFor"]> };
+
+/** Starlink-train awareness (D5): Starlink objects above the horizon now, clustered by direction.
+ * Honest framing — a "possible train" is modelled, not a confirmed sighting. */
+function StarlinkTrains({ rows, core, onOpen }: { rows: OverheadRow[]; core: CatalogCore; onOpen: (o: TleObject) => void }) {
+  const sl = rows.filter((r) => r.look && r.o.name.toUpperCase().startsWith("STARLINK"));
+  if (sl.length < 2) return null;
+  const visible = sl.filter((r) => r.vis?.mayBeVisible).length;
+  const meanAz = sl.reduce((a, r) => a + (r.look!.azimuthDeg), 0) / sl.length;
+  return (
+    <section className="om-panel" aria-labelledby="sl-h">
+      <p className="om-eyebrow" id="sl-h">Starlink overhead · {sl.length} now{visible ? ` · ${visible} may be visible` : ""}</p>
+      <p className="om-sub" style={{ margin: "0 0 8px" }}>
+        {sl.length >= 3
+          ? `Possible Starlink train — ${sl.length} satellites modelled above your horizon, generally toward the ${core.compassOf(meanAz)}. Trains are most train-like soon after a launch; this is modelled, not a confirmed sighting.`
+          : `${sl.length} Starlink satellites modelled above your horizon.`}
+      </p>
+      {sl.slice(0, 6).map((r) => (
+        <Row key={r.o.noradId} core={core} o={r.o} onOpen={onOpen} badge={r.vis?.mayBeVisible ? <VisibleBadge /> : undefined}
+          right={<>{r.look!.elevationDeg.toFixed(0)}° {core.compassOf(r.look!.azimuthDeg)}</>} />
+      ))}
+    </section>
+  );
+}
+
 export function TonightView({ core, onOpen, onTab }: { core: CatalogCore; onOpen: (o: TleObject) => void; onTab: (t: string) => void }) {
   const overhead = useMemo(() => core.objects
     .map((o) => ({ o, look: core.lookFor(o), vis: core.visibilityFor(o) }))
@@ -72,6 +97,8 @@ export function TonightView({ core, onOpen, onTab }: { core: CatalogCore; onOpen
           <p className="om-sub" style={{ fontSize: 12, marginTop: 12 }}>&ldquo;May be visible&rdquo; = sunlit + your sky dark enough + above horizon (modelled). Brightness isn&apos;t computed yet, so visibility is never guaranteed.</p>
         </>}
       </section>
+
+      <StarlinkTrains rows={overhead} core={core} onOpen={onOpen} />
       <button className="om-cta" type="button" onClick={() => onTab("sky")}>Open Sky →</button>
       <button className="om-cta secondary" type="button" onClick={() => onTab("catalog")}>Browse the catalogue</button>
     </>
@@ -288,6 +315,47 @@ export function PassesScreen({ core }: { core: CatalogCore }) {
           </div>
         </section>
       ))}
+    </>
+  );
+}
+
+function LearnCard({ title, children, source }: { title: string; children: React.ReactNode; source: string }) {
+  return (
+    <section className="om-panel">
+      <p className="om-eyebrow">{title}</p>
+      <p className="om-sub" style={{ margin: 0 }}>{children}</p>
+      <p className="meta" style={{ marginTop: 8, color: "var(--om-text-muted)" }}>Source: {source}</p>
+    </section>
+  );
+}
+
+/** Learn (S-14) — reviewed, sourced explainers (differentiator D3). No unreviewed claim ships. */
+export function LearnScreen() {
+  return (
+    <>
+      <p className="om-eyebrow">Learn</p>
+      <h1 className="om-h1">How to read the sky honestly</h1>
+      <LearnCard title="Modelled, not detected" source="CelesTrak GP data formats (T.S. Kelso)">
+        OrbitMark computes each position with the SGP4 model from public orbital elements — it never
+        senses or &ldquo;detects&rdquo; an object through your camera. What you see is a calculation, shown as a
+        candidate, never a single certain object.
+      </LearnCard>
+      <LearnCard title="Why a position is a region, not a point" source="Jankovic 2026, arXiv:2605.19850; Vallado/CelesTrak">
+        Public elements (TLEs) are accurate to roughly a kilometre near their epoch, and the error grows
+        — mostly along the orbit track — to tens of kilometres within about a week. That is why our
+        uncertainty ring grows as the elements age, and why we show each object&apos;s element age and confidence.
+      </LearnCard>
+      <LearnCard title="When a satellite may be visible" source="Fankhauser, Tyson &amp; Askari 2023, AJ 166:59 (arXiv:2305.11123)">
+        A satellite is visible only when it is sunlit, your sky is dark (the Sun well below the horizon),
+        and it is above your horizon — usually the hour after dusk or before dawn. Brightness depends on the
+        object and is modelled, so &ldquo;may be visible&rdquo; is never a guarantee.
+      </LearnCard>
+      <LearnCard title="Orbital debris & a sustainable sky" source="IAU CPS (cps.iau.org); MNRAS Letters 544:L15 (2025)">
+        OrbitMark tracks catalogued debris alongside active satellites. The astronomy community (IAU)
+        recommends that operational satellites stay faint enough to not disturb the unaided-eye sky, and
+        studies find many exceed that. Showing debris and brightness honestly is part of keeping space sustainable.
+      </LearnCard>
+      <p className="om-sub" style={{ fontSize: 12, color: "var(--om-text-muted)" }}>These explainers are reviewed and sourced; OrbitMark does not ship unverified factual claims.</p>
     </>
   );
 }
