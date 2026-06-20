@@ -52,10 +52,18 @@ cd web; npm install; npm run dev
 Health check: `GET http://localhost:8000/api/health`.
 
 ## Git → Railway
-- GitHub repo: `rotemyoeli/ARSkyMap` (auto-deploy on push to `main`).
+- GitHub repo: `rotemyoeli/ARSkyMap`. **Note:** neither Railway service is
+  GitHub-connected (`source.repo` is null on both `web` and `backend`), so pushing
+  to `main` does NOT auto-deploy. **Deploys are manual via `railway up`** from each
+  service's subdir (the CLI is linked: project `ARSkyMap`, env `production`).
+  Push to `main` only for version control / history.
 - Railway project has **3 components**: Postgres plugin, `backend` service
-  (root `/backend`), `web` service (root `/web`). `DATABASE_URL` is injected into
-  the backend automatically; set `DEV_MODE`, `SECRET_KEY` as service variables.
+  (root `/backend`, NIXPACKS, healthcheck `/api/health`), `web` service
+  (root `/web`, DOCKERFILE builder). `DATABASE_URL` is injected into the backend
+  automatically; set `DEV_MODE`, `SECRET_KEY` as service variables.
+- **`web` has no public domain yet** (`serviceDomains` empty) — generate one in the
+  Railway dashboard before the app is reachable. Backend domain:
+  `backend-production-f7c19.up.railway.app`.
 
 ## Current state
 - M(-1) **Infra scaffold** — DONE: monorepo, Flask factory + `/api/health` +
@@ -72,13 +80,18 @@ Health check: `GET http://localhost:8000/api/health`.
     1 Hz Alt/Az table for ISS + a debris object with observer lat/lon + UTC for the
     GATE comparison. `npm run build` passes.
 
-## In flight (uncommitted)
-- **`web` deploy hardening:** Railway's Nixpacks auto-detect was flaky on the
-  `/web` monorepo subdir, so the web build is being switched to a committed
-  `Dockerfile` (`node:20-alpine`, `npm ci` → `vite build` → `npm run preview`).
-  Files: `web/Dockerfile` (new), `web/railway.toml` (`builder = "DOCKERFILE"`).
-  `vite.config.ts` already has `preview.allowedHosts: true` for the Railway host.
-  Not yet committed/pushed — needs a Railway deploy to confirm green.
+## In flight
+- **`web` deploy hardening — COMMITTED (`1771e0c`):** web build switched from
+  flaky Nixpacks to a committed `Dockerfile` (`node:20-alpine`, `npm ci` →
+  `vite build` → `npm run preview`). Files: `web/Dockerfile`, `web/railway.toml`
+  (`builder = "DOCKERFILE"`). `vite.config.ts` has `preview.allowedHosts: true`.
+  - **Live prod `web` already runs this Dockerfile** (deploy `11fddc7f`, green,
+    2026-06-19). The commit just persisted the previously-uncommitted local files.
+  - **2026-06-20 redeploy via `railway up` failed twice** — both failed in seconds
+    at "scheduling build on Metal builder `builder-zchmak`" with zero build output.
+    That's a Railway builder-infra flake (or build-usage limit), NOT our config.
+    Last good deploy `11fddc7f` kept serving; prod unaffected. **Retry `railway up`
+    later** (likely lands on a healthy builder).
 
 ## Next (verify-gated roadmap)
 - **M0 GATE (do this next):** run web + backend locally, open the app, allow
