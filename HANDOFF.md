@@ -52,17 +52,19 @@ cd web; npm install; npm run dev
 Health check: `GET http://localhost:8000/api/health`.
 
 ## Git → Railway
-- GitHub repo: `rotemyoeli/ARSkyMap`. **Note:** neither Railway service is
-  GitHub-connected (`source.repo` is null on both `web` and `backend`), so pushing
-  to `main` does NOT auto-deploy. **Deploys are manual via `railway up`** from each
-  service's subdir (the CLI is linked: project `ARSkyMap`, env `production`).
-  Push to `main` only for version control / history.
+- GitHub repo: `rotemyoeli/ARSkyMap`. **Both Railway services are GitHub-connected**
+  to `rotemyoeli/ARSkyMap@main` (set 2026-06-20 via API `serviceConnect`):
+  **push to `main` auto-deploys both.** Root directories: `web` → `/web`,
+  `backend` → `/backend` (so each builds from its subdir and reads that subdir's
+  `railway.toml`). The Railway GitHub App is installed on the `rotemyoeli` account.
 - Railway project has **3 components**: Postgres plugin, `backend` service
   (root `/backend`, NIXPACKS, healthcheck `/api/health`), `web` service
   (root `/web`, DOCKERFILE builder). `DATABASE_URL` is injected into the backend
   automatically; set `DEV_MODE`, `SECRET_KEY` as service variables.
-- **`web` has no public domain yet** (`serviceDomains` empty) — generate one in the
-  Railway dashboard before the app is reachable. Backend domain:
+- Manual deploy still possible via `railway up` from a service subdir (CLI linked:
+  project `ARSkyMap`, env `production`).
+- **`web` has no public domain yet** (`serviceDomains` empty) — generate with
+  `railway domain --service web` once a build is green. Backend domain:
   `backend-production-f7c19.up.railway.app`.
 
 ## Current state
