@@ -27,13 +27,18 @@ jobs:
       ENVIRONMENT_ID: 1afb53a6-a7bb-4cbf-8c1e-2cfa9a47d1af
     steps:
       - name: Trigger Railway deploy (${{ matrix.name }})
+        env:
+          COMMIT_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
+          # Deploy the exact pushed commit from the connected source (root dir
+          # /web or /backend). commitSha is required, else Railway rebuilds the
+          # stale cached HEAD instead of the new code.
           resp=$(curl -sS -X POST https://backboard.railway.com/graphql/v2 \
             -H "Authorization: Bearer ${RAILWAY_API_TOKEN}" \
             -H "Content-Type: application/json" \
-            -d "{\"query\":\"mutation(\$s:String!,\$e:String!){serviceInstanceDeployV2(serviceId:\$s,environmentId:\$e)}\",\"variables\":{\"s\":\"${{ matrix.service_id }}\",\"e\":\"${ENVIRONMENT_ID}\"}}")
+            -d "{\"query\":\"mutation(\$s:String!,\$e:String!,\$c:String!){serviceInstanceDeployV2(serviceId:\$s,environmentId:\$e,commitSha:\$c)}\",\"variables\":{\"s\":\"${{ matrix.service_id }}\",\"e\":\"${ENVIRONMENT_ID}\",\"c\":\"${COMMIT_SHA}\"}}")
           echo "$resp"
           # Fail the job if the API returned an errors array.
           echo "$resp" | grep -q '"errors"' && { echo "Railway API error"; exit 1; } || true
-          echo "Deploy triggered for ${{ matrix.name }}."
+          echo "Deploy triggered for ${{ matrix.name }} @ ${COMMIT_SHA}."
