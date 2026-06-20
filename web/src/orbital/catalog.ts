@@ -52,7 +52,7 @@ function parseTleText(text: string, objectType?: string): TleObject[] {
 
 async function fromBackend(): Promise<Catalog | null> {
   try {
-    const r = await fetch(`${API_BASE}/satellites?limit=200`);
+    const r = await fetch(`${API_BASE}/satellites?limit=500`);
     if (!r.ok) return null;
     const data = await r.json();
     if (!data.items?.length) return null;

@@ -20,7 +20,16 @@ from app.models.satellite import Satellite
 # CelesTrak GP API, TLE (3-line) format. `stations` carries the ISS (ZARYA);
 # `cosmos-2251-debris` is a well-known debris cloud for the debris lens.
 CELESTRAK_GP = "https://celestrak.org/NORAD/elements/gp.php"
-DEFAULT_GROUPS = ("stations", "cosmos-2251-debris")
+# Richer-but-bounded set for the debris lens + Starlink trains. One fetch per group per
+# ingest run (respect CelesTrak rate guidance, BLK-004). Caps applied per group below.
+DEFAULT_GROUPS = (
+    "stations",            # ISS + crewed/station objects
+    "active",              # active payloads (bright, recognisable)
+    "starlink",            # Starlink (train detection, D5)
+    "cosmos-2251-debris",  # debris clouds (sustainability lens, D3)
+    "iridium-33-debris",
+    "fengyun-1c-debris",
+)
 REQUEST_TIMEOUT = 30  # seconds
 USER_AGENT = "ARSkyMap/0.1 (M0 spike; contact rotemyoeliai@gmail.com)"
 
@@ -74,7 +83,7 @@ def fetch_group(group: str) -> str:
     return resp.text
 
 
-def run_ingest(groups=DEFAULT_GROUPS, limit_per_group: int | None = 50) -> dict:
+def run_ingest(groups=DEFAULT_GROUPS, limit_per_group: int | None = 60) -> dict:
     """Fetch the given CelesTrak groups and upsert them into `satellites`.
 
     `limit_per_group` caps how many objects we keep per group (the spike only needs a
