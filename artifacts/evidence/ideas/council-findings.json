@@ -1,0 +1,18 @@
+{
+  "review_type": "five_creative_ideas_independent",
+  "features": ["I1 magnitude+dark-sky lens", "I2 observed-vs-modelled sightings", "I3 re-entry/decay watch", "I4 crowded-shells density", "I5 orbit-track uncertainty tube"],
+  "reviewed_commit": "df879aa",
+  "remediation_commit": "7f9e155",
+  "quorum": ["orbital-dynamics-reviewer", "red-team-adversary", "program-director (consolidation)"],
+  "raw_verdicts": {"orbital": "APPROVE", "red-team": "APPROVE_WITH_CONDITIONS"},
+  "findings": [
+    {"id": "O-1/O-2/O-3", "reviewer": "orbital", "severity": "ADVISORY", "area": "physics", "evidence": "ECEF->ECI rotation matches satellite.js ecfToEci; satrec.a in earth radii (WGS-72 6378.135 vs our 6378.137, ~2 m); decay heuristic defensible; ground track eciToGeodetic+gstime correct", "status": "ACCEPTED", "note": "all immaterial at displayed precision; honestly labelled coarse"},
+    {"id": "RT-2", "reviewer": "red-team", "severity": "MAJOR", "area": "claims/honesty", "evidence": "ObjectDetail said 'brightness/magnitude not yet computed' but magnitude IS computed/shown (contradiction)", "status": "REMEDIATED", "fix": "copy now: 'brightness is a coarse class-based modelled estimate (no per-object size/BRDF)'"},
+    {"id": "RT-1", "reviewer": "red-team", "severity": "MAJOR", "area": "claims/honesty", "evidence": "sightings copy claimed 'help calibrate confidence' but confidence is age-only; loop not implemented", "status": "REMEDIATED", "fix": "copy now: logs the modelled-time residual locally; states confidence is from element age only"},
+    {"id": "RT-3", "reviewer": "red-team", "severity": "ADVISORY", "area": "claims/sourcing", "evidence": "mag-7 dark-sky figure lacked inline source", "status": "REMEDIATED", "fix": "added 'IAU CPS / MNRAS L15' inline"},
+    {"id": "RT-4", "reviewer": "red-team", "severity": "ADVISORY", "area": "display precision", "evidence": "~mag X.X to 1 dp from a single class constant", "status": "ACCEPTED", "note": "kept '~' + coarse-modelled qualifier adjacent; no false claim"}
+  ],
+  "crowded_shells_guardrail": "VERIFIED — strictly aggregate density education; explicitly disclaims conjunction/collision prediction (CDR out-of-scope). No inter-object collision-risk wording.",
+  "final_verdict": "APPROVE",
+  "unresolved_blocking": "none (both MAJOR remediated, verified live)"
+}

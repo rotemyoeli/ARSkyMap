@@ -25,6 +25,13 @@ differentiation_backlog:
   D8_privacy_promise: DONE
   D9_golden_vectors: DONE
   C1_celestrak_compliance: OPEN (BLK-004)
+creative_ideas_v2:  # 5 research-grounded ideas — all DONE, council-reviewed, live
+  I1_magnitude_darksky: DONE (apparent magnitude + IAU mag-7 dark-sky lens)
+  I2_observed_vs_modelled: DONE (local sighting residual log; community calibration = future)
+  I3_reentry_decay_watch: DONE (perigee/B* decay flag + Object-detail orbit section)
+  I4_crowded_shells: DONE (altitude-band density education; NOT collision prediction)
+  I5_orbit_uncertainty_tube: DONE (SVG ground track with along-track uncertainty band)
+  council: artifacts/evidence/ideas/council-findings.json (APPROVE after RT-1/RT-2 remediation)
 external_blockers: [BLK-001, BLK-002]
 ops_blockers: [BLK-003, BLK-004]
 production_decision: DOCS/PRODUCTION_RECOMMENDATION.md  # human-only; autonomous authority ends here
