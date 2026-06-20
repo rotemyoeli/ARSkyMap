@@ -24,6 +24,7 @@ Most-conservative consolidated decision: BLOCK → remediate → re-verify.
 | QA-3 | QA | MINOR | SHA256SUMS hygiene | duplicate env line | dedupe generator | regen | REMEDIATED |
 | RT-3 | Red-Team | MINOR | gate/council records | absent at review | create records | files present | REMEDIATED |
 | RT-4 | Red-Team | MINOR | develop + main protection | no develop branch; no protection | create develop; protect main | branch exists; gh api result | REMEDIATED_PARTIAL |
+| CI-1 | running-verification | MAJOR | GOV-P0-6 CI runs | delivered ci.yml startup-failed (hashFiles job-if); claude-safe bad scalars | fix workflows | PR #1 run 27864460551 docs-and-guards GREEN | REMEDIATED |
 
 ## Remediation and rerun
 Fixed `make-evidence-manifest.py` (LF newlines, deduped SHA256SUMS); added `SHA256SUMS text

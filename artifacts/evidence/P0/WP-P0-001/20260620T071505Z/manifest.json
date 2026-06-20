@@ -2,7 +2,7 @@
   "run_id": "20260620T071505Z",
   "phase": "P0",
   "work_package": "WP-P0-001",
-  "commit": "e160c605e7155103056859204d62582559ec98dc",
+  "commit": "3a5d9e64f9f18f798444103f2acba97cb7d48e3e",
   "branch": "wp/p0-001-governance-bootstrap",
   "environment": {
     "run_id": "20260620T071505Z",
@@ -33,13 +33,13 @@
   "artifacts": [
     {
       "path": "artifacts/evidence/P0/WP-P0-001/20260620T071505Z/council-findings.json",
-      "sha256": "e2984ff76a3a88f905e429d647dbab842475b70d691bcf8e8954ec0b75ce6be4",
-      "bytes": 3874
+      "sha256": "63b4382ec7b90bb5ae0620d1edb21cd79775a8a855294ae2d3a69e39f4dd61de",
+      "bytes": 4441
     },
     {
       "path": "artifacts/evidence/P0/WP-P0-001/20260620T071505Z/COUNCIL_REVIEW.md",
-      "sha256": "7ec4c2115d833ecf2e3ef79a74e758892df61194808181f803da3f06a3a8675f",
-      "bytes": 2962
+      "sha256": "11be87a37a9f808b0d3bebeea1813e2177f9651e7eaa46f1bc1e555c84d0b5fc",
+      "bytes": 3174
     },
     {
       "path": "artifacts/evidence/P0/WP-P0-001/20260620T071505Z/environment.json",
@@ -103,8 +103,8 @@
     },
     {
       "path": "DOCS/gates/GATE_G-P0.md",
-      "sha256": "c9f68ba970b5854c22ef39a31aa3199e678fadff270cc0859afe7628ba4319fc",
-      "bytes": 3180
+      "sha256": "a8d433fe4d356778f39ace491605d3819d5632e27f87b70a62833863d71fc15c",
+      "bytes": 3863
     }
   ],
   "council": {

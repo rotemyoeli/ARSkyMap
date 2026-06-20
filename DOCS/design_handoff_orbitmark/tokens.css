@@ -1,0 +1,75 @@
+/* OrbitMark design tokens — OM-CDR-001 v1.2
+   Night-field instrument. Drop into your React/PWA codebase as the token layer.
+   Pair with @font-face / <link> for Space Grotesk, Inter, JetBrains Mono. */
+
+:root {
+  /* surfaces */
+  --om-bg-canvas: #07131F;
+  --om-bg-surface: #0E2233;
+  --om-bg-panel: #132C40;
+  --om-bg-panel-deep: #0A1A28;
+
+  /* text */
+  --om-text-primary: #F4F7FA;
+  --om-text-secondary: #A9BBC9;
+  --om-text-muted: #7E96A8;
+
+  /* action */
+  --om-action-primary: #43C6D9;
+  --om-action-primary-ink: #062028;
+  --om-focus: #74A7FF;
+
+  /* status */
+  --om-warning: #FFB454;
+  --om-danger: #FF6B6B;
+  --om-success: #53D49A;
+
+  /* object markers */
+  --om-marker-active: #43C6D9;   /* circle   */
+  --om-marker-inactive: #5B7C99; /* square   */
+  --om-marker-rocket: #FFB454;   /* diamond  */
+  --om-marker-debris: #74A7FF;   /* triangle */
+
+  /* borders */
+  --om-border-hairline: rgba(255,255,255,0.07);
+  --om-border-strong: rgba(255,255,255,0.14);
+  --om-border-accent: rgba(67,198,217,0.35);
+
+  /* spacing scale (px) */
+  --om-space-1: 4px;
+  --om-space-2: 8px;
+  --om-space-3: 12px;
+  --om-space-4: 16px;
+  --om-space-6: 24px;
+  --om-space-8: 32px;
+
+  /* radius */
+  --om-radius-control: 12px;
+  --om-radius-panel: 16px;
+  --om-radius-sheet: 20px;
+  --om-radius-pill: 9999px;
+
+  /* motion */
+  --om-dur-fast: 150ms;
+  --om-dur-standard: 220ms;
+  --om-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* shadow */
+  --om-shadow-card: 0 24px 60px rgba(0,0,0,0.5);
+  --om-shadow-cta: 0 8px 24px rgba(67,198,217,0.28);
+
+  /* min touch target */
+  --om-target-min: 44px;
+
+  /* type */
+  --om-font-display: "Space Grotesk", system-ui, sans-serif;
+  --om-font-ui: "Inter", system-ui, sans-serif;
+  --om-font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* iOS: prevent zoom on input focus */
+input, textarea, select { font-size: 16px; }

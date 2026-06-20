@@ -1,5 +1,15 @@
 # Claude Design UX/UI Production Package
 
+> **Binding design handoff:** the concrete, authoritative design deliverable is
+> `DOCS/design_handoff_orbitmark/` — `design-tokens.json` + `tokens.css` (single token
+> source, no inline hex), `SCREEN_CONTRACTS.md` (S-01…S-18 purpose/action/data-truth/
+> states/codes), and `OrbitMark_Design_Package.html` (high-fidelity reference). It binds
+> WP-P4-001 (design system) and all P5+ UI. Order: **CDR v1.2 / Appendix G wins on any
+> conflict.** Generate the token layer from the JSON/CSS; build tokens → primitives →
+> components → screens; implement every screen's full state set with controlled codes;
+> enforce the product-language claims list; verify the running app against the prototype
+> + screenshot matrix before any screen is "done".
+
 
 ## 1. Design mission
 Create a calm, trustworthy night-field instrument that makes model status and uncertainty understandable while keeping the personal catalog - not AR spectacle - as the memorable value. The design must work as a PWA, adapt to Capacitor iOS/Android shells, and preserve complete Manual Sky and semantic list alternatives.

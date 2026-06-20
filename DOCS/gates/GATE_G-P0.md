@@ -11,7 +11,7 @@ artifacts/evidence/P0/WP-P0-001/20260620T071505Z
 | 3 | All mandatory skills + agents exist | PASS | 15 `.claude/skills/*/SKILL.md`; 12 `.claude/agents/*.md` (validate-docs.txt, registry) |
 | 4 | PROJECT_SKILLS.md matches disk (1:1) | PASS | generate-skills-registry.py 15=15; `git diff --exit-code` clean (registry-check.txt); CI `docs-and-guards` enforces |
 | 5 | queue/state parse | PASS | RUN_STATE.yaml + WORK_QUEUE.yaml valid YAML (bootstrap) |
-| 6 | CI skeleton runs | PASS (reproduced locally) | `docs-and-guards` steps reproduced: validate-docs PASS, registry diff clean, guard self-test PASS. GitHub-side run occurs on PR/once merged to develop |
+| 6 | CI skeleton runs | PASS (verified on GitHub) | `docs-and-guards` is GREEN on PR #1 — GitHub run 27864460551 (pull_request) success in 8s; `gh pr checks 1` = pass. Fixed delivered defect CI-1 (see below). Also reproduced locally |
 | 7 | destructive-command test blocked | PASS | guard-destructive-selftest.sh blocks `git push origin main`, `rm -rf /`, `railway delete`; allows `git status`, `pnpm test` (guard-selftest.txt) |
 
 ## Universal DoD
@@ -36,6 +36,15 @@ Program Director consolidation. Final: APPROVE. See COUNCIL_REVIEW.md / council-
 No merge to `main` (main == origin/main == a6ec5be, unchanged; WP commit not an ancestor). No production
 deploy executed. No secret committed (only .env.example + ${{secrets}} reference). No provider/legal
 acceptance. No gate/permission weakened. Verified by independent Red-Team + Security/Privacy.
+
+## Post-verification finding (caught by running CI)
+- **CI-1 (MAJOR, REMEDIATED):** the delivered `ci.yml` failed GitHub workflow startup
+  (0s, "workflow file issue") on every push — its `web`/`python` jobs used a job-level
+  `if: ${{ hashFiles(...) }}`, which is invalid before checkout, and `claude-safe-work-package.yml`
+  had unquoted `"id: ..."` plain scalars. Fixed: `claude-safe` run steps → block scalars;
+  `ci.yml` reduced to the P0 `docs-and-guards` job (web/python CI restored in WP-P1-001 with
+  the monorepo). Verified GREEN on PR #1 (run 27864460551). This is why "CI skeleton runs" is
+  now verified on GitHub, not only locally.
 
 ## Decision: PASS
 G-P0 PASS with residual ops item BLK-003 (MITIGATED). Authorizes WP-P1-001 (Foundation) to become READY.

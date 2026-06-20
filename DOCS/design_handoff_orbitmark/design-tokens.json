@@ -1,0 +1,69 @@
+{
+  "$meta": {
+    "name": "OrbitMark Design Tokens",
+    "authority": "OM-CDR-001 v1.2 · DOCS/15_OrbitMark_Claude_Design_Execution_Brief_v2.0.md",
+    "thesis": "Calm, trustworthy night-field instrument. Modelled position, element age and visibility uncertainty are primary UI. Avoid neon sci-fi, purple gradients, game HUDs, heavy glassmorphism, universal pills."
+  },
+  "color": {
+    "bg": {
+      "canvas": "#07131F",
+      "surface": "#0E2233",
+      "panel": "#132C40",
+      "panelDeep": "#0A1A28"
+    },
+    "text": {
+      "primary": "#F4F7FA",
+      "secondary": "#A9BBC9",
+      "muted": "#7E96A8"
+    },
+    "action": {
+      "primary": "#43C6D9",
+      "primaryInk": "#062028",
+      "focus": "#74A7FF"
+    },
+    "status": {
+      "warning": "#FFB454",
+      "danger": "#FF6B6B",
+      "success": "#53D49A"
+    },
+    "marker": {
+      "activePayload": "#43C6D9",
+      "inactivePayload": "#5B7C99",
+      "rocketBody": "#FFB454",
+      "debris": "#74A7FF"
+    },
+    "border": {
+      "hairline": "rgba(255,255,255,0.07)",
+      "strong": "rgba(255,255,255,0.14)",
+      "accent": "rgba(67,198,217,0.35)"
+    }
+  },
+  "space": { "1": 4, "2": 8, "3": 12, "4": 16, "6": 24, "8": 32 },
+  "radius": { "control": 12, "panel": 16, "sheet": 20, "pill": 9999 },
+  "motion": {
+    "fast": "150ms",
+    "standard": "220ms",
+    "ease": "cubic-bezier(0.4, 0, 0.2, 1)",
+    "reducedMotion": "honour prefers-reduced-motion; dial all animation to ~0.01ms"
+  },
+  "target": { "minimum": 44 },
+  "type": {
+    "display": { "family": "Space Grotesk", "weights": [400, 500, 600], "use": "Headlines, screen titles", "range": "24-78px" },
+    "ui": { "family": "Inter", "weights": [400, 500, 600, 700], "use": "Body, labels, actions", "range": "13-20px" },
+    "mono": { "family": "JetBrains Mono", "weights": [400, 500, 600], "use": "Every data-truth string: coordinates, epochs, IDs, codes, package versions" }
+  },
+  "shadow": {
+    "card": "0 24px 60px rgba(0,0,0,0.5)",
+    "phone": "0 40px 90px rgba(0,0,0,0.55)",
+    "ctaGlow": "0 8px 24px rgba(67,198,217,0.28)"
+  },
+  "markerGrammar": {
+    "rule": "Shape carries meaning first, then label, then optional colour. No core meaning depends on colour alone.",
+    "activePayload": "circle",
+    "inactivePayload": "square",
+    "rocketBody": "diamond",
+    "debris": "triangle",
+    "watched": "outer dashed halo + accessible state",
+    "uncertainty": "dashed ring (signature honesty motif; never removed on selection)"
+  }
+}
