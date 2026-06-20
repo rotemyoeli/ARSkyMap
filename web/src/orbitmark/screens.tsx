@@ -25,15 +25,18 @@ export function DataTruth({ core }: { core: CatalogCore }) {
   );
 }
 
+const CONF_COLOR = { high: "var(--om-success)", good: "var(--om-success)", degrading: "var(--om-warning)", low: "var(--om-danger)" } as const;
+
 function Row({ core, o, onOpen, right }: { core: CatalogCore; o: TleObject; onOpen: (o: TleObject) => void; right?: React.ReactNode }) {
   const store = useCatalogStore();
   const watched = store.byId(o.noradId)?.watched;
+  const conf = core.confidenceFor(o);
   return (
     <button className="om-row" type="button" onClick={() => onOpen(o)}>
-      <Marker kind={core.kindOf(o)} watched={watched} />
+      <Marker kind={core.kindOf(o)} watched={watched} uncertainty={conf.u} />
       <span style={{ minWidth: 0 }}>
         <span className="name">{o.name}</span><br />
-        <span className="meta">{KIND_LABEL[core.kindOf(o)]} · #{o.noradId}</span>
+        <span className="meta">{KIND_LABEL[core.kindOf(o)]} · #{o.noradId} · <span style={{ color: CONF_COLOR[conf.level] }}>conf {conf.level}</span></span>
       </span>
       <span className="om-sep">{right}</span>
     </button>
@@ -149,6 +152,8 @@ export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogC
   const cell = (k: string, v: string) => (
     <div className="om-passcell"><div className="k">{k}</div><div className="v">{v}</div></div>
   );
+  const conf = core.confidenceFor(o);
+  const epoch = core.epochFor(o);
   const saveAll = () => {
     store.save({ noradId: o.noradId, name: o.name, type: o.objectType });
     store.setNote(o.noradId, note);
@@ -158,19 +163,25 @@ export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogC
     <>
       <button type="button" className="om-cta secondary" style={{ margin: "0 0 16px", minHeight: 40, width: "auto", padding: "0 16px" }} onClick={onBack}>← Back</button>
       <p className="om-eyebrow">{KIND_LABEL[core.kindOf(o)]}</p>
-      <h1 className="om-h1" style={{ display: "flex", alignItems: "center", gap: 10 }}><Marker kind={core.kindOf(o)} watched={entry?.watched} /> {o.name}</h1>
+      <h1 className="om-h1" style={{ display: "flex", alignItems: "center", gap: 10 }}><Marker kind={core.kindOf(o)} watched={entry?.watched} uncertainty={conf.u} /> {o.name}</h1>
       <DataTruth core={core} />
       <section className="om-panel">
         <p className="om-eyebrow">Honest record</p>
         <div className="om-passgrid" style={{ gridTemplateColumns: "1fr 1fr" }}>
           {cell("Catalog ID", `#${o.noradId}`)}
           {cell("Source", core.source)}
+          {cell("Element epoch", epoch ? epoch.toISOString().slice(0, 16).replace("T", " ") + " UTC" : "—")}
+          {cell("Element age", `${conf.ageDays.toFixed(1)} d`)}
           {cell("Azimuth", look ? `${look.azimuthDeg.toFixed(1)}° ${core.compassOf(look.azimuthDeg)}` : "—")}
           {cell("Elevation", look ? `${look.elevationDeg.toFixed(1)}°` : "—")}
           {cell("Range", look ? `${Math.round(look.rangeKm).toLocaleString()} km` : "—")}
           {cell("Above horizon", look ? (look.aboveHorizon ? "yes" : "no") : "—")}
         </div>
-        <p className="om-sub" style={{ marginTop: 12, fontSize: 12 }}>Geometric, modelled for {core.calculatedForUtc}. Visibility (sunlit / darkness / brightness) is a separate model — not yet computed.</p>
+        <p className="om-sub" style={{ marginTop: 12, fontSize: 12 }}>
+          <span style={{ color: CONF_COLOR[conf.level] }}>Confidence: {conf.level}</span> — {conf.label}.
+          Geometric, modelled for {core.calculatedForUtc}; the uncertainty ring grows with element age.
+          Visibility (sunlit / darkness / brightness) is a separate model — not yet computed.
+        </p>
       </section>
       <section className="om-panel">
         <p className="om-eyebrow">Save &amp; annotate · the wedge</p>
