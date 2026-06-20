@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && node scripts/verify-sgp4.mjs && vite build",
+    "verify:sgp4": "node scripts/verify-sgp4.mjs",
     "preview": "vite preview --host 0.0.0.0 --port ${PORT:-4173}",
     "start": "vite preview --host 0.0.0.0 --port ${PORT:-4173}"
   },
