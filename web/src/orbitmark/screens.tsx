@@ -9,7 +9,7 @@ import { type TleObject } from "../orbital/catalog";
 import { lookAngle } from "../orbital/propagate";
 import { Marker } from "./Tonight";
 import { type CatalogCore } from "./useCatalog";
-import { useCatalogStore } from "./store";
+import { useCatalogStore, isAnalystRange } from "./store";
 
 const KIND_LABEL = { active: "Active payload", inactive: "Inactive payload", rocket: "Rocket body", debris: "Catalogued debris" } as const;
 
@@ -88,9 +88,9 @@ export function ManualSky({ core, onOpen }: { core: CatalogCore; onOpen: (o: Tle
       <p className="om-eyebrow">Manual Sky · no sensors</p>
       <h1 className="om-h1">Scan a direction</h1>
       <p className="om-sub">Modelled for {core.calculatedForUtc}. Pick where you&apos;re looking — we list every candidate in that region.</p>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 16 }}>
+      <div role="group" aria-label="Direction to scan" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 16 }}>
         {REGIONS.map((r) => (
-          <button key={r.id} type="button" onClick={() => setRegion(r)} className="om-cta secondary"
+          <button key={r.id} type="button" aria-pressed={region.id === r.id} onClick={() => setRegion(r)} className="om-cta secondary"
             style={{ minHeight: 44, margin: 0, borderColor: region.id === r.id ? "var(--om-action-primary)" : undefined, color: region.id === r.id ? "var(--om-action-primary)" : undefined }}>{r.label}</button>
         ))}
       </div>
@@ -120,7 +120,7 @@ export function CatalogScreen({ core, onOpen }: { core: CatalogCore; onOpen: (o:
     <>
       <p className="om-eyebrow">My Catalog</p>
       <h1 className="om-h1">Objects {savedOnly ? "you saved" : "in the catalogue"}</h1>
-      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or NORAD id…"
+      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or NORAD id…" aria-label="Search the catalogue by name or NORAD id"
         style={{ width: "100%", minHeight: 44, borderRadius: 12, border: "1px solid var(--om-border-strong)", background: "var(--om-bg-panel-deep)", color: "var(--om-text-primary)", padding: "0 14px", marginBottom: 12 }} />
       <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
         <button type="button" className="om-cta secondary" style={{ margin: 0, minHeight: 40, borderColor: !savedOnly ? "var(--om-action-primary)" : undefined }} onClick={() => setSavedOnly(false)}>All ({core.objects.length})</button>
@@ -144,6 +144,8 @@ export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogC
   const look = core.lookFor(o);
   const [note, setNote] = useState(entry?.note ?? "");
   const [tagText, setTagText] = useState((entry?.tags ?? []).join(", "));
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  const identityLimited = isAnalystRange(o.noradId);
   const cell = (k: string, v: string) => (
     <div className="om-passcell"><div className="k">{k}</div><div className="v">{v}</div></div>
   );
@@ -172,13 +174,32 @@ export function ObjectDetail({ o, core, onBack }: { o: TleObject; core: CatalogC
       </section>
       <section className="om-panel">
         <p className="om-eyebrow">Save &amp; annotate · the wedge</p>
-        <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Your note (why you saved it)…" rows={3}
-          style={{ width: "100%", borderRadius: 12, border: "1px solid var(--om-border-strong)", background: "var(--om-bg-panel-deep)", color: "var(--om-text-primary)", padding: 12, marginBottom: 8, fontFamily: "var(--om-font-ui)" }} />
-        <input value={tagText} onChange={(e) => setTagText(e.target.value)} placeholder="tags, comma separated"
-          style={{ width: "100%", minHeight: 44, borderRadius: 12, border: "1px solid var(--om-border-strong)", background: "var(--om-bg-panel-deep)", color: "var(--om-text-primary)", padding: "0 14px", marginBottom: 12 }} />
-        <button type="button" className="om-cta" onClick={saveAll}>{entry ? "Update saved object" : "Save to catalogue"}</button>
-        {entry && <button type="button" className="om-cta secondary" onClick={() => store.toggleWatch(o.noradId)}>{entry.watched ? "★ Watching — stop watching" : "☆ Watch this object"}</button>}
-        {entry && <button type="button" className="om-cta secondary" style={{ borderColor: "var(--om-danger)", color: "var(--om-danger)" }} onClick={() => { store.remove(o.noradId); onBack(); }}>Remove from catalogue</button>}
+        {identityLimited ? (
+          <p className="om-sub" style={{ margin: 0, color: "var(--om-warning)" }}>
+            Identity-limited: this is an analyst/provisional object (range 80000–89999) whose number can
+            be reused. It is excluded from the personal catalogue until a lineage-safe identity is approved,
+            so it can&apos;t be saved or watched.
+          </p>
+        ) : (
+          <>
+            <label htmlFor="om-note" className="meta" style={{ display: "block", marginBottom: 6 }}>Note</label>
+            <textarea id="om-note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Why you saved it…" rows={3}
+              style={{ width: "100%", borderRadius: 12, border: "1px solid var(--om-border-strong)", background: "var(--om-bg-panel-deep)", color: "var(--om-text-primary)", padding: 12, marginBottom: 8, fontFamily: "var(--om-font-ui)" }} />
+            <label htmlFor="om-tags" className="meta" style={{ display: "block", marginBottom: 6 }}>Tags (comma separated)</label>
+            <input id="om-tags" value={tagText} onChange={(e) => setTagText(e.target.value)} placeholder="e.g. iss, watchlist"
+              style={{ width: "100%", minHeight: 44, borderRadius: 12, border: "1px solid var(--om-border-strong)", background: "var(--om-bg-panel-deep)", color: "var(--om-text-primary)", padding: "0 14px", marginBottom: 12 }} />
+            <button type="button" className="om-cta" onClick={saveAll}>{entry ? "Update saved object" : "Save to catalogue"}</button>
+            {entry && <button type="button" className="om-cta secondary" aria-pressed={entry.watched} onClick={() => store.toggleWatch(o.noradId)}>{entry.watched ? "★ Watching — stop watching" : "☆ Watch this object"}</button>}
+            {entry && !confirmRemove && <button type="button" className="om-cta secondary" style={{ borderColor: "var(--om-danger)", color: "var(--om-danger)" }} onClick={() => setConfirmRemove(true)}>Remove from catalogue</button>}
+            {entry && confirmRemove && (
+              <div role="alertdialog" aria-label="Confirm remove" style={{ marginTop: 8 }}>
+                <p className="om-sub" style={{ margin: "0 0 8px", color: "var(--om-danger)" }}>Remove &ldquo;{o.name}&rdquo; and its note/tags from your catalogue?</p>
+                <button type="button" className="om-cta" style={{ background: "var(--om-danger)", color: "#1a0606" }} onClick={() => { store.remove(o.noradId); onBack(); }}>Yes, remove</button>
+                <button type="button" className="om-cta secondary" onClick={() => setConfirmRemove(false)}>Keep it</button>
+              </div>
+            )}
+          </>
+        )}
       </section>
     </>
   );
