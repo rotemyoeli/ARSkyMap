@@ -14,12 +14,13 @@ import { useCatalogStore, isAnalystRange } from "./store";
 const KIND_LABEL = { active: "Active payload", inactive: "Inactive payload", rocket: "Rocket body", debris: "Catalogued debris" } as const;
 
 export function DataTruth({ core }: { core: CatalogCore }) {
-  const stale = core.elementAge != null && /\d+ d ago/.test(core.elementAge);
+  const cached = core.source === "cache";
+  const stale = cached || (core.elementAge != null && /\d+ d ago/.test(core.elementAge));
   return (
     <div className={`om-truth${stale ? " warn" : ""}`} aria-label="Data status" aria-live="polite">
       <span><span className="om-dot" style={{ background: stale ? "var(--om-warning)" : "var(--om-success)" }} />
         elements <b>{core.elementAge ? `updated ${core.elementAge}` : "freshness unknown"}</b></span>
-      <span>source <b>{core.source}</b></span>
+      <span>source <b>{cached ? "cached (offline)" : core.source}</b></span>
       <span>calculated for <b>{core.calculatedForUtc}</b></span>
     </div>
   );
@@ -285,6 +286,27 @@ function nextPass(o: TleObject, observer: CatalogCore["observer"], from: Date): 
   return null;
 }
 
+function PassReminder({ name, rise }: { name: string; rise: Date }) {
+  const [state, setState] = useState<"idle" | "set" | "denied" | "past">("idle");
+  const leadMs = 5 * 60_000;
+  const fireAt = rise.getTime() - leadMs;
+  const set = async () => {
+    if (fireAt <= Date.now()) { setState("past"); return; }
+    if (!("Notification" in window)) { setState("denied"); return; }
+    let perm = Notification.permission;
+    if (perm === "default") perm = await Notification.requestPermission();
+    if (perm !== "granted") { setState("denied"); return; }
+    window.setTimeout(() => {
+      try { new Notification("OrbitMark — pass soon", { body: `${name} rises around ${rise.toISOString().slice(11, 16)} UTC (modelled). Your OS may deliver this early or late.` }); } catch { /* ignore */ }
+    }, fireAt - Date.now());
+    setState("set");
+  };
+  if (state === "set") return <p className="om-sub" style={{ margin: "8px 0 0", color: "var(--om-success)" }}>Reminder set ~5 min before (works while OrbitMark stays open).</p>;
+  if (state === "denied") return <p className="om-sub" style={{ margin: "8px 0 0", color: "var(--om-warning)" }}>Notifications unavailable/blocked — enable them in your browser to get reminders.</p>;
+  if (state === "past") return <p className="om-sub" style={{ margin: "8px 0 0", color: "var(--om-text-muted)" }}>This pass is too soon to remind.</p>;
+  return <button type="button" className="om-cta secondary" style={{ marginTop: 8 }} onClick={set}>Remind me ~5 min before</button>;
+}
+
 export function PassesScreen({ core }: { core: CatalogCore }) {
   const store = useCatalogStore();
   const watched = store.entries.filter((e) => e.watched);
@@ -313,6 +335,7 @@ export function PassesScreen({ core }: { core: CatalogCore }) {
             <div className="om-passcell"><div className="k">Max</div><div className="v" style={{ color: "var(--om-action-primary)" }}>{t(p.max)}</div></div>
             <div className="om-passcell"><div className="k">Set</div><div className="v">{t(p.set)}</div></div>
           </div>
+          <PassReminder name={p.o.name} rise={p.rise} />
         </section>
       ))}
     </>

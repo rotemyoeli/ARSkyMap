@@ -14,7 +14,7 @@ export interface TleObject {
 }
 
 export interface Catalog {
-  source: "backend" | "celestrak";
+  source: "backend" | "celestrak" | "cache";
   lastUpdated: string | null;
   objects: TleObject[];
 }
@@ -79,20 +79,43 @@ async function fromCelestrak(group: string, objectType?: string): Promise<TleObj
   return parseTleText(await r.text(), objectType);
 }
 
-/** Load a small spike catalog: ISS (stations) + a debris cloud. */
+const CACHE_KEY = "orbitmark.catalog.cache.v1";
+
+/** Persist the last good catalogue for offline / local-first use (M2). */
+function writeCache(cat: Catalog) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ...cat, cachedAt: new Date().toISOString() })); } catch { /* quota */ }
+}
+function readCache(): Catalog | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const c = JSON.parse(raw);
+    if (!c.objects?.length) return null;
+    // Mark as cached so the UI can show "using cached data".
+    return { source: "cache", lastUpdated: c.lastUpdated ?? c.cachedAt ?? null, objects: c.objects };
+  } catch { return null; }
+}
+
+/**
+ * Load the catalogue: backend first, then CelesTrak direct, then the last good local cache
+ * (so the app keeps working offline / local-first). Every successful network load is cached.
+ */
 export async function loadCatalog(): Promise<Catalog> {
   const backend = await fromBackend();
-  if (backend) return backend;
+  if (backend) { writeCache(backend); return backend; }
 
-  const [stations, debris] = await Promise.all([
-    fromCelestrak("stations"),
-    fromCelestrak("cosmos-2251-debris", "DEBRIS"),
-  ]);
-  return {
-    source: "celestrak",
-    lastUpdated: null, // CelesTrak doesn't hand back a single freshness stamp here
-    objects: [...stations, ...debris.slice(0, 50)],
-  };
+  try {
+    const [stations, debris] = await Promise.all([
+      fromCelestrak("stations"),
+      fromCelestrak("cosmos-2251-debris", "DEBRIS"),
+    ]);
+    const cat: Catalog = { source: "celestrak", lastUpdated: null, objects: [...stations, ...debris.slice(0, 50)] };
+    if (cat.objects.length) { writeCache(cat); return cat; }
+  } catch { /* fall through to cache */ }
+
+  const cached = readCache();
+  if (cached) return cached;
+  throw new Error("offline and no cached catalogue yet");
 }
 
 /** Pick the ISS plus the first debris object for the spike's two-object render. */

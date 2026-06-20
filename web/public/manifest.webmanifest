@@ -1,0 +1,14 @@
+{
+  "name": "OrbitMark",
+  "short_name": "OrbitMark",
+  "description": "Honest, model-based companion for satellites and orbital debris. Save, note, watch, and get pass reminders.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07131F",
+  "theme_color": "#07131F",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
