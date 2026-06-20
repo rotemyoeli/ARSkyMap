@@ -8,8 +8,13 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Build the static bundle. VITE_API_BASE is a build-time var injected by Railway.
+# Build the static bundle. VITE_API_BASE must be declared as ARG so Railway's
+# service variable flows into the Docker build; Vite bakes import.meta.env.VITE_*
+# at build time, so it MUST be set as ENV before `npm run build`. Without this the
+# bundle falls back to http://localhost:8000 and never reaches the prod backend.
 COPY . .
+ARG VITE_API_BASE
+ENV VITE_API_BASE=$VITE_API_BASE
 RUN npm run build
 
 # Railway sets PORT; vite preview binds to it (see package.json "preview").
