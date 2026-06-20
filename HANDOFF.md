@@ -40,6 +40,10 @@ docker-compose.yml   local Postgres
 | Web      | `npm run dev` (port 5173)               | service root `/web`, vite preview |
 | Postgres | `docker compose up -d` (port 5432)      | managed Postgres plugin           |
 
+**Live prod URLs (verified 2026-06-20):**
+- Backend: https://backend-production-f7c19.up.railway.app — `/api/health` → `ok`
+- Web:     https://web-production-1340.up.railway.app — serves the AR Sky-Map PWA
+
 ## Run locally (PowerShell)
 ```powershell
 # Postgres
