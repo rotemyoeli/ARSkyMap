@@ -72,6 +72,14 @@ Health check: `GET http://localhost:8000/api/health`.
     1 Hz Alt/Az table for ISS + a debris object with observer lat/lon + UTC for the
     GATE comparison. `npm run build` passes.
 
+## In flight (uncommitted)
+- **`web` deploy hardening:** Railway's Nixpacks auto-detect was flaky on the
+  `/web` monorepo subdir, so the web build is being switched to a committed
+  `Dockerfile` (`node:20-alpine`, `npm ci` → `vite build` → `npm run preview`).
+  Files: `web/Dockerfile` (new), `web/railway.toml` (`builder = "DOCKERFILE"`).
+  `vite.config.ts` already has `preview.allowedHosts: true` for the Railway host.
+  Not yet committed/pushed — needs a Railway deploy to confirm green.
+
 ## Next (verify-gated roadmap)
 - **M0 GATE (do this next):** run web + backend locally, open the app, allow
   geolocation, and compare the rendered Az/Alt for ISS against Heavens-Above for the

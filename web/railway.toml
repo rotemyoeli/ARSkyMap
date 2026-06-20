@@ -1,8 +1,9 @@
 # Railway service config for the web (PWA) frontend. Set this service's Root
-# Directory to /web in the Railway dashboard.
+# Directory to /web in the Railway dashboard (or deploy the subdir directly).
+# Builds via the committed Dockerfile for a deterministic Node toolchain.
 [build]
-builder = "NIXPACKS"
-buildCommand = "npm ci && npm run build"
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
 startCommand = "npm run preview"
