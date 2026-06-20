@@ -1,0 +1,39 @@
+name: Deploy to Railway
+
+# Push-to-deploy for both Railway services. Railway's native GitHub trigger could
+# not be armed from the CLI (creating a deployment trigger requires a Railway user
+# account with its GitHub identity linked to this repo). Instead, on every push to
+# main we call Railway's API to deploy each service from its already-connected
+# source (root dirs /web and /backend). Requires repo secret RAILWAY_API_TOKEN.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: web
+            service_id: 00beac61-34f6-46db-8b1c-06a7ab12efbd
+          - name: backend
+            service_id: cea73519-0995-4702-b146-1cf12b7a6f08
+    env:
+      RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+      ENVIRONMENT_ID: 1afb53a6-a7bb-4cbf-8c1e-2cfa9a47d1af
+    steps:
+      - name: Trigger Railway deploy (${{ matrix.name }})
+        run: |
+          set -euo pipefail
+          resp=$(curl -sS -X POST https://backboard.railway.com/graphql/v2 \
+            -H "Authorization: Bearer ${RAILWAY_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\":\"mutation(\$s:String!,\$e:String!){serviceInstanceDeployV2(serviceId:\$s,environmentId:\$e)}\",\"variables\":{\"s\":\"${{ matrix.service_id }}\",\"e\":\"${ENVIRONMENT_ID}\"}}")
+          echo "$resp"
+          # Fail the job if the API returned an errors array.
+          echo "$resp" | grep -q '"errors"' && { echo "Railway API error"; exit 1; } || true
+          echo "Deploy triggered for ${{ matrix.name }}."
