@@ -1,0 +1,463 @@
+{
+  "package": "OrbitMark Autonomous Development Package",
+  "version": "2.0",
+  "created": "2026-06-20",
+  "file_count": 91,
+  "files": [
+    {
+      "path": ".claude/agents/accessibility-auditor.md",
+      "sha256": "88181d294d1cd119600b10ce22580ef05293f9ba9035f990ebbf4bdbabe59aa9",
+      "bytes": 606
+    },
+    {
+      "path": ".claude/agents/commercial-reality-reviewer.md",
+      "sha256": "d722106ef7f47c3f7f3bd3a590ed3b70ef6d16b941ae824e3deb854b5cf3acb0",
+      "bytes": 573
+    },
+    {
+      "path": ".claude/agents/data-platform-architect.md",
+      "sha256": "2073ff8e4aa23f9c1245a46b50db1c72fdb6fbfe56ec2d2513fd15c2023e655c",
+      "bytes": 643
+    },
+    {
+      "path": ".claude/agents/devops-release-manager.md",
+      "sha256": "7d4d091381835228ce4424f0eccde993352ac443a549a657ce1792cb9a615766",
+      "bytes": 618
+    },
+    {
+      "path": ".claude/agents/mobile-ar-architect.md",
+      "sha256": "4c9abbe08067b8310bdc9f1b4a7a45278d1da7664e2d41c8e42306dbf2820555",
+      "bytes": 621
+    },
+    {
+      "path": ".claude/agents/orbital-dynamics-reviewer.md",
+      "sha256": "725b29adbf6e3a1fc30569d8138ddc31f1da1e739a0fa68d2c4efd43371219bb",
+      "bytes": 607
+    },
+    {
+      "path": ".claude/agents/product-strategy-reviewer.md",
+      "sha256": "d2352ec311ca7dfa6bbc02b80ad1894bf3d601beae30f250e9bf5d63da0f28e3",
+      "bytes": 619
+    },
+    {
+      "path": ".claude/agents/program-director.md",
+      "sha256": "3dd17911f94ac15a782e2d9ed69d9f0f91996aee6c203e2b8827290633f73cfc",
+      "bytes": 704
+    },
+    {
+      "path": ".claude/agents/qa-reliability-lead.md",
+      "sha256": "9ba49473196b7cada3d3cb6805c9c6aa37dcf9a34f06654e8456afd7cef75bbc",
+      "bytes": 646
+    },
+    {
+      "path": ".claude/agents/red-team-adversary.md",
+      "sha256": "63bdb81440cc833c5150dc88c685c4047d81f69d25ec9126c1e8a0c27b3c85f5",
+      "bytes": 634
+    },
+    {
+      "path": ".claude/agents/security-privacy-reviewer.md",
+      "sha256": "2625024e28d0aa53bd85e3f8fac5ad78fba1a44160ccf408c616a4d054b95947",
+      "bytes": 613
+    },
+    {
+      "path": ".claude/agents/ux-design-director.md",
+      "sha256": "597e331df2fc6eca9f63e0769c5ea9f5309cd7f6b8da4a4a042cb8b79f592b1d",
+      "bytes": 633
+    },
+    {
+      "path": ".claude/rules/01-authority.md",
+      "sha256": "ac7d3325e4b1defbb3ab3640e0797b78d45c74ec55890d4f1d541f43a1d0bd0d",
+      "bytes": 230
+    },
+    {
+      "path": ".claude/rules/02-orbital.md",
+      "sha256": "27628bd9eb36ca059c0d9c9e592735cd6302638949712340fd2f3b089ee79127",
+      "bytes": 261
+    },
+    {
+      "path": ".claude/rules/03-ux-a11y.md",
+      "sha256": "e97c4ee6a8e063558ec556652b96d506971ca179fc67825c217afc405a7ade1f",
+      "bytes": 247
+    },
+    {
+      "path": ".claude/rules/04-evidence.md",
+      "sha256": "de4ce8b2bb6d3eab4bf2bc7b87ead7e05d337bffa6cc6741bce2ef3331a47fa3",
+      "bytes": 200
+    },
+    {
+      "path": ".claude/rules/05-autonomy-safety.md",
+      "sha256": "4ae4aaf1db231e3d7a3aa94f1bfe141d441e42a0975fc93f9910ed7f8ab1fe7d",
+      "bytes": 252
+    },
+    {
+      "path": ".claude/settings.json",
+      "sha256": "4c05604426a9b145d05c090b74f87ebd5ce4dd8dde53818a6da2831a6597fecc",
+      "bytes": 1742
+    },
+    {
+      "path": ".claude/skills/orbitmark-accessibility-gate/SKILL.md",
+      "sha256": "0317381afb636dee2784a69f510f674cd960956c6352491e844ca543c78ac8e2",
+      "bytes": 474
+    },
+    {
+      "path": ".claude/skills/orbitmark-accessibility-gate/evals/README.md",
+      "sha256": "3d34fcc13fc4dfdb13ab52f96ba6a4e4ce24b86e09806bf9a6279b6a8630d2b3",
+      "bytes": 201
+    },
+    {
+      "path": ".claude/skills/orbitmark-autopilot/SKILL.md",
+      "sha256": "412cf4320587fe7c8eccff5d45bd5dbf5f43d3abf85f3fad841b287c11396bd5",
+      "bytes": 600
+    },
+    {
+      "path": ".claude/skills/orbitmark-autopilot/evals/README.md",
+      "sha256": "1029b5754ce781f8b45d7bfc523c1880d544c3fdbad88724566069f8efb4bdee",
+      "bytes": 192
+    },
+    {
+      "path": ".claude/skills/orbitmark-bootstrap/SKILL.md",
+      "sha256": "aada7b5252651a06ef21bb484738e0aeedb69e3784f1564aeae4e1d040d50aa9",
+      "bytes": 1079
+    },
+    {
+      "path": ".claude/skills/orbitmark-bootstrap/evals/README.md",
+      "sha256": "4048072ced884231a310a26651c644dc013ad4ec1b8005f47dfaa5371d330faa",
+      "bytes": 192
+    },
+    {
+      "path": ".claude/skills/orbitmark-claims-gate/SKILL.md",
+      "sha256": "03e524e37a62dc6699e4f5acc7e0f5955174ec4c625545027cb6285960f71f41",
+      "bytes": 505
+    },
+    {
+      "path": ".claude/skills/orbitmark-claims-gate/evals/README.md",
+      "sha256": "53c5714e55ab009f1d3357989f256bde63745d222e38b791c2ff6601646dd2c0",
+      "bytes": 194
+    },
+    {
+      "path": ".claude/skills/orbitmark-council-review/SKILL.md",
+      "sha256": "07e935a7d7a9543db96c552142061251ebfc93e4cf79fe0eb4f0751dd4b76e61",
+      "bytes": 494
+    },
+    {
+      "path": ".claude/skills/orbitmark-council-review/evals/README.md",
+      "sha256": "54917d00cfc1c486ac164212af6649d0dbe9a75f4ab62fabb48a1aecbb7d11ae",
+      "bytes": 197
+    },
+    {
+      "path": ".claude/skills/orbitmark-docs-sync/SKILL.md",
+      "sha256": "6bf2b39ff16e68d1729d1720567900ac494018a4eb1ef5e05c01081532322419",
+      "bytes": 447
+    },
+    {
+      "path": ".claude/skills/orbitmark-docs-sync/evals/README.md",
+      "sha256": "4af1165ae8b201bb5312c01806f40c937ad953fd993a0531950a9b656e083fd1",
+      "bytes": 192
+    },
+    {
+      "path": ".claude/skills/orbitmark-frontend-implementation/SKILL.md",
+      "sha256": "fbf4eea04e541b0fdbb9ef130c52f8a30a8507dfce295d7d5ac306179c160532",
+      "bytes": 550
+    },
+    {
+      "path": ".claude/skills/orbitmark-frontend-implementation/evals/README.md",
+      "sha256": "53a67200396c36d4721c7cfc304c747f572805587b626a91ecdaa1b775961e99",
+      "bytes": 206
+    },
+    {
+      "path": ".claude/skills/orbitmark-orbital-data/SKILL.md",
+      "sha256": "0617761e884835ba367c4a1015003bd96802e0cebb38aa369439a78c427ce34e",
+      "bytes": 615
+    },
+    {
+      "path": ".claude/skills/orbitmark-orbital-data/evals/README.md",
+      "sha256": "6f9f0d7053e14c375ed9542f1e721e8e9efd8a761df1143b0a8839fc5571f8d1",
+      "bytes": 195
+    },
+    {
+      "path": ".claude/skills/orbitmark-plan-work-package/SKILL.md",
+      "sha256": "516b7cd3118c072b502193d601d7e2d08521665ada041e037bb9f8dcf479b403",
+      "bytes": 544
+    },
+    {
+      "path": ".claude/skills/orbitmark-plan-work-package/evals/README.md",
+      "sha256": "6ca9e8b6ac73c39f99d06e988da03ed79090195f0bc9807690ef8ace2286e932",
+      "bytes": 200
+    },
+    {
+      "path": ".claude/skills/orbitmark-release-gate/SKILL.md",
+      "sha256": "ae9d9e39233f09d085ee29d2430f636082c5dc39eacda9c9a1b4643e5952e630",
+      "bytes": 434
+    },
+    {
+      "path": ".claude/skills/orbitmark-release-gate/evals/README.md",
+      "sha256": "daeeebe30549fbbe7536a9b0f8c19a13aff65ab2408370175745c80764acee2f",
+      "bytes": 195
+    },
+    {
+      "path": ".claude/skills/orbitmark-requirements-traceability/SKILL.md",
+      "sha256": "4d9311c1134247b0587ba7ea6327b1fec7ff5a9f62d34606a10440c675f25f8c",
+      "bytes": 443
+    },
+    {
+      "path": ".claude/skills/orbitmark-requirements-traceability/evals/README.md",
+      "sha256": "73e75a4bf703a5ac2c35b27387e3f24826d7677d2a9c41d8592852295fc1add2",
+      "bytes": 208
+    },
+    {
+      "path": ".claude/skills/orbitmark-screenshot-matrix/SKILL.md",
+      "sha256": "88a5e94025862a562d74667baf20de5803c0fcf5fc3550c944a8dc9af75f245f",
+      "bytes": 497
+    },
+    {
+      "path": ".claude/skills/orbitmark-screenshot-matrix/evals/README.md",
+      "sha256": "ecd1129fbff075c890a2a7efc634d52fd75c2a3d4d42179ea8f662d3ff73b409",
+      "bytes": 200
+    },
+    {
+      "path": ".claude/skills/orbitmark-security-privacy-gate/SKILL.md",
+      "sha256": "adc376e8627c62e5b3917ce7e64d560d23411a3c6efc9dbc797906ea12efc25c",
+      "bytes": 530
+    },
+    {
+      "path": ".claude/skills/orbitmark-security-privacy-gate/evals/README.md",
+      "sha256": "4b6964c54fee7aeef907f8d74686ef1e23cbf582a824f644c5f365b69753ce8b",
+      "bytes": 204
+    },
+    {
+      "path": ".claude/skills/orbitmark-test-and-evidence/SKILL.md",
+      "sha256": "940527676abe15c3bdd4784e8c14d215d5562bac11b4dcd44d305ed88d242356",
+      "bytes": 479
+    },
+    {
+      "path": ".claude/skills/orbitmark-test-and-evidence/evals/README.md",
+      "sha256": "8ece4047bb7e1a7c338d5e9286431e915a065bdde8b3e7dc822aa7fa37a278ad",
+      "bytes": 200
+    },
+    {
+      "path": ".claude/skills/orbitmark-ux-design-authority/SKILL.md",
+      "sha256": "5da1fe6a821d1e522fbbf9aafeb0142e4e843201b71d760ddc1425a81caf6230",
+      "bytes": 592
+    },
+    {
+      "path": ".claude/skills/orbitmark-ux-design-authority/evals/README.md",
+      "sha256": "fe895a50339408ec2a4e50adaf9039f6d21105992003fed8ddb22afceab6f78e",
+      "bytes": 202
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "95cefe47330a78c7bd8ccfbaf0bacbdd9aa553a2d9afa3114d8f3cb567c43da2",
+      "bytes": 1956
+    },
+    {
+      "path": ".github/workflows/claude-safe-work-package.yml",
+      "sha256": "beced2f3dc229d633dfec9d53c628c53bf8d1e5e102d305e2988f11801fcfc4d",
+      "bytes": 699
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "1432254073fcca51cb0bdca15661730dd89b601245feea3e94fd5b364f7c6ea9",
+      "bytes": 2605
+    },
+    {
+      "path": "DOCS/00_README_AND_AUTHORITY.md",
+      "sha256": "d5dfc40f96fba64a8d9397530f10892eabc755d745363597b047e71128d0f07e",
+      "bytes": 2821
+    },
+    {
+      "path": "DOCS/01_OrbitMark_Critical_Design_Review_CDR_v1.2.docx",
+      "sha256": "dbb3bd9118d479a852772477853f6ea6bac1d8ff2692ac3f2fa1ea4dee26b98a",
+      "bytes": 1351485
+    },
+    {
+      "path": "DOCS/01_OrbitMark_Critical_Design_Review_CDR_v1.2.pdf",
+      "sha256": "8dce4a27c734123f95f299677358e0c69198626045076633a9e264537600d1b0",
+      "bytes": 2788173
+    },
+    {
+      "path": "DOCS/02_AUTONOMOUS_DEVELOPMENT_MASTER_PLAN.md",
+      "sha256": "ad143a26cacde219e2af9a21417fc4f3536f5301fb844c70d790d4c7a1755059",
+      "bytes": 8123
+    },
+    {
+      "path": "DOCS/03_PROJECT_SKILLS_STRATEGY_AND_REGISTRY.md",
+      "sha256": "150e563c6e93f58fbe4e80b8526e02ec70a74961bfe842cb174fa62aeebaf2d0",
+      "bytes": 6040
+    },
+    {
+      "path": "DOCS/04_COUNCIL_CHARTER_AND_REVIEW_PROTOCOL.md",
+      "sha256": "2f4ce860874127353caf45c28479d69881966de407f3e8aab84da626904a4090",
+      "bytes": 4435
+    },
+    {
+      "path": "DOCS/05_CLAUDE_DESIGN_UX_UI_PACKAGE.md",
+      "sha256": "8af881ada30641c690555da38a1d9ab830c085bb843c155e9df4febd77104a63",
+      "bytes": 5878
+    },
+    {
+      "path": "DOCS/06_TEST_VERIFICATION_SCREENSHOT_EVIDENCE_PLAN.md",
+      "sha256": "0d57543551f1d491fefa2e79c87b31553f2517726b0ce606082e99512ede4976",
+      "bytes": 3817
+    },
+    {
+      "path": "DOCS/07_RELEASE_GATES_AND_DEFINITION_OF_DONE.md",
+      "sha256": "7a8f01f5d685a2f30788cb9ce94c7c1f756663d630770f194382a415011baee2",
+      "bytes": 3119
+    },
+    {
+      "path": "DOCS/08_REPOSITORY_ARCHITECTURE_AND_BOOTSTRAP.md",
+      "sha256": "4fe48d876fcfe26bbd0f885327c723fe047f9088117b924913d610ca23a1b352",
+      "bytes": 2891
+    },
+    {
+      "path": "DOCS/09_AUTOPILOT_RUNBOOK.md",
+      "sha256": "a382dd2deef07c499159aec169bda21fa5039c09e983ba6e184a582a47c9ef64",
+      "bytes": 1853
+    },
+    {
+      "path": "DOCS/10_REQUIREMENTS_TRACEABILITY_TEMPLATE.csv",
+      "sha256": "71c8428f5b2a5fdeb302a848b303616bec954969c599d9cdc345ae18f53605b1",
+      "bytes": 89
+    },
+    {
+      "path": "DOCS/10_REQUIREMENTS_TRACEABILITY_TEMPLATE.md",
+      "sha256": "518eb3d42a84b4f61b1ada06cd47be2a8e9b48e1de3e3849bf8972fdb39a77ae",
+      "bytes": 469
+    },
+    {
+      "path": "DOCS/11_DECISION_LOG.md",
+      "sha256": "2d39f861639a9f1b205ae7afd1c7f7d32fb122bfe4d5e448448e8d2317e1bd75",
+      "bytes": 236
+    },
+    {
+      "path": "DOCS/12_BLOCKERS.md",
+      "sha256": "65d0172de8aa39c437d43069597af0888c7053495c91bf30baea3034ca322e45",
+      "bytes": 448
+    },
+    {
+      "path": "DOCS/13_SOURCE_REGISTER.md",
+      "sha256": "a265d17a02ae1fe8baf1f90c7b251919c327525dea747505056f1519dc1e38a2",
+      "bytes": 1998
+    },
+    {
+      "path": "DOCS/14_OrbitMark_CDR_Executive_Interactive_Brief_v1.2.html",
+      "sha256": "be14f5d7c5637ca719344b67515aa0e48de40b54a52ab02e442cf607dc0fc179",
+      "bytes": 1961008
+    },
+    {
+      "path": "DOCS/15_OrbitMark_Claude_Design_Execution_Brief_v2.0.md",
+      "sha256": "ba94809d182b6f579b2cb467a86a51daeb2c0dc2f795810d7a910254ea8042ef",
+      "bytes": 17741
+    },
+    {
+      "path": "DOCS/PROJECT_SKILLS.md",
+      "sha256": "d4667e20cb721a298ca72c45d0ed1c3927ce64707d0022b5fd7b1f0c0a11e825",
+      "bytes": 3256
+    },
+    {
+      "path": "DOCS/START_HERE_PROMPT.md",
+      "sha256": "44a509c45fc1898a2c939978f2d4891ae3c76da590b22e8428d84b7c98ac174a",
+      "bytes": 1494
+    },
+    {
+      "path": "DOCS/assets/autonomy_loop.png",
+      "sha256": "e80547fe52cdc19198cad0a97876032c029c9793e5470ef26f9bebf1a4ddf6cb",
+      "bytes": 112423
+    },
+    {
+      "path": "DOCS/assets/evidence_pipeline.png",
+      "sha256": "bd50279e2054d0c39af940859cd6a5220d9b0035db37053cf5bd8eb327aa8529",
+      "bytes": 137596
+    },
+    {
+      "path": "DOCS/assets/skills_council_architecture.png",
+      "sha256": "2a246ed50b98077d369c9d95734ed7a5f5d537986ce9e3b1fa77bec39c0d4828",
+      "bytes": 163026
+    },
+    {
+      "path": "DOCS/templates/ADR_TEMPLATE.md",
+      "sha256": "10f55b2e202d44509fda817ddbc54aa2e667f8f687512541725976b988ac8639",
+      "bytes": 221
+    },
+    {
+      "path": "DOCS/templates/COUNCIL_REVIEW_TEMPLATE.md",
+      "sha256": "42fd7d29eff19691141488a56f9ef4ca680ff407158892b1aaf451ef55bf607d",
+      "bytes": 203
+    },
+    {
+      "path": "DOCS/templates/EVIDENCE_MANIFEST_TEMPLATE.json",
+      "sha256": "641088a8ac557219172cb93af42829c981acd4110f912838d39d9f56cf803eba",
+      "bytes": 199
+    },
+    {
+      "path": "DOCS/templates/GATE_RECORD_TEMPLATE.md",
+      "sha256": "a692c7aa97f556025282f0dd105e0c3bae954afa0c436a277e4c8211cb51b737",
+      "bytes": 189
+    },
+    {
+      "path": "DOCS/templates/WORK_PACKAGE_TEMPLATE.md",
+      "sha256": "32ebad9bda5815adce9415d640825d53f2d264e1a21bb126854a1ea42f362dec",
+      "bytes": 434
+    },
+    {
+      "path": "RUN_STATE.yaml",
+      "sha256": "3bc8c16a961558690d604aaff7ec4ba193783da0411c7764756666a3185a1ff4",
+      "bytes": 280
+    },
+    {
+      "path": "WORK_QUEUE.yaml",
+      "sha256": "e09c2944bcd9464a3096b32fa77f6ee935e7be13c7542f68fec918001d248b68",
+      "bytes": 1968
+    },
+    {
+      "path": "scripts/bootstrap_project.sh",
+      "sha256": "04d20306894e67da4afcf00d59d05691d788fbcbdbbf1815f0104a892afe8c8d",
+      "bytes": 1173
+    },
+    {
+      "path": "scripts/capture-evidence.sh",
+      "sha256": "0786623e81e0f7cbb3a58a2991da51799516b35be2d458302b09475dc38aed3a",
+      "bytes": 564
+    },
+    {
+      "path": "scripts/claude-autopilot.sh",
+      "sha256": "900c48e66619e945facf9e816c5f525549487f1890b2895e9ee8adae7056e9f2",
+      "bytes": 1121
+    },
+    {
+      "path": "scripts/generate-skills-registry.py",
+      "sha256": "7d8b2eb6db429bfeec4b30cfdf2f4a6adcb29463bd874b2a1ce2bc0ac56f9590",
+      "bytes": 1079
+    },
+    {
+      "path": "scripts/guard-destructive-selftest.sh",
+      "sha256": "f4dfac07864220d5be4b7fa583f3cf23b056b681d5432330f429478cbe95e2f4",
+      "bytes": 607
+    },
+    {
+      "path": "scripts/guard-destructive.sh",
+      "sha256": "ec34974dd8e962d217aa8a9b6c226b39c9b4cc062627f41e58aeb6f1b2320f8a",
+      "bytes": 591
+    },
+    {
+      "path": "scripts/post-edit-check.sh",
+      "sha256": "4fb8a4be43b8cd6f63fc7429c903e03e9b41d46592997f0c0be4acb54f63fdaf",
+      "bytes": 244
+    },
+    {
+      "path": "scripts/quality-gate.sh",
+      "sha256": "2395ac723a4bdb6cbca5dda122e3b718cb56fc32b66468a7f41e1b4a8dd1ccc6",
+      "bytes": 490
+    },
+    {
+      "path": "scripts/stop-evidence-check.sh",
+      "sha256": "794939b307d2266d4878a91fc945a56b3afcd61d63b68559355e311f019b1a12",
+      "bytes": 384
+    },
+    {
+      "path": "scripts/validate-docs.py",
+      "sha256": "7236a21639fe0f10afe54fefe4e5268309cec2e4116fc9b6ed6b52a6d9c791a1",
+      "bytes": 1086
+    }
+  ]
+}

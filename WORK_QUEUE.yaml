@@ -1,0 +1,79 @@
+version: 1
+work_packages:
+  - id: WP-P0-001
+    title: Governance and environment bootstrap
+    phase: P0
+    priority: 1
+    dependencies: []
+    status: READY
+    gate: G-P0
+  - id: WP-P1-001
+    title: Greenfield monorepo and clean launch foundation
+    phase: P1
+    priority: 2
+    dependencies: [WP-P0-001]
+    status: BACKLOG
+    gate: G-P1
+  - id: WP-P2-001
+    title: OMM ingestion, identity and immutable package lifecycle
+    phase: P2
+    priority: 3
+    dependencies: [WP-P1-001]
+    status: BACKLOG
+    gate: G-P2
+  - id: WP-P3-001
+    title: Orbital engine, independent vectors and working-set scheduler
+    phase: P3
+    priority: 4
+    dependencies: [WP-P2-001]
+    status: BACKLOG
+    gate: G0.5
+  - id: WP-P4-001
+    title: Design system, screen contracts and Storybook state matrix
+    phase: P4
+    priority: 5
+    dependencies: [WP-P1-001]
+    status: BACKLOG
+    gate: G-P4
+  - id: WP-P5-001
+    title: Manual Sky and personal catalog vertical loop
+    phase: P5
+    priority: 6
+    dependencies: [WP-P3-001, WP-P4-001]
+    status: BACKLOG
+    gate: M1
+  - id: WP-P6-001
+    title: Camera Sky, sensors, calibration and uncertainty
+    phase: P6
+    priority: 7
+    dependencies: [WP-P5-001]
+    status: BACKLOG
+    gate: M1-CAMERA
+  - id: WP-P7-001
+    title: Local pass solver and notification lifecycle
+    phase: P7
+    priority: 8
+    dependencies: [WP-P3-001, WP-P5-001]
+    status: BACKLOG
+    gate: M2
+  - id: WP-P8-001
+    title: Trust, data status, education and settings
+    phase: P8
+    priority: 9
+    dependencies: [WP-P5-001, WP-P7-001]
+    status: BACKLOG
+    gate: M3
+  - id: WP-P9-001
+    title: Cross-cutting hardening and release candidate
+    phase: P9
+    priority: 10
+    dependencies: [WP-P6-001, WP-P8-001]
+    status: BACKLOG
+    gate: BETA
+  - id: WP-P10-001
+    title: Staging beta deployment and evidence closure
+    phase: P10
+    priority: 11
+    dependencies: [WP-P9-001]
+    status: BACKLOG
+    gate: STAGING-RC

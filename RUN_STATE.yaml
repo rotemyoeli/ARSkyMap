@@ -1,0 +1,15 @@
+version: 1
+project: OrbitMark
+phase: P0
+current_work_package: null
+status: READY
+branch: null
+worktree: null
+last_completed: null
+last_evidence: null
+retry_counts: {}
+external_blockers:
+  - BLK-001
+  - BLK-002
+next_action: Run orbitmark-bootstrap
+updated_at: 2026-06-20T00:00:00Z

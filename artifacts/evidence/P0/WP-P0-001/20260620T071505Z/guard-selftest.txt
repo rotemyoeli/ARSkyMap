@@ -1,0 +1,5 @@
+PASS blocked: git push origin main
+PASS blocked: rm -rf /
+PASS blocked: railway delete service
+PASS allowed: git status
+PASS allowed: pnpm test

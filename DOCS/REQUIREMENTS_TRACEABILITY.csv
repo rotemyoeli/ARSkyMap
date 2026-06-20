@@ -1,0 +1,8 @@
+requirement,decision,work_package,code_modules,tests,screens_states,evidence,gate,status
+GOV-P0-1,ADR-0001,WP-P0-001,DOCS/ .claude/ scripts/ .github/,scripts/validate-docs.py,none,artifacts/evidence/P0/WP-P0-001,G-P0,VERIFIED
+GOV-P0-2,ADR-0001,WP-P0-001,.claude/settings.json scripts/guard-destructive.sh,json.tool + guard-destructive-selftest.sh,none,artifacts/evidence/P0/WP-P0-001,G-P0,VERIFIED
+GOV-P0-3,ADR-0001,WP-P0-001,.claude/skills/** .claude/agents/**,validate-docs.py (skill name uniqueness),none,artifacts/evidence/P0/WP-P0-001,G-P0,VERIFIED
+GOV-P0-4,ADR-0001,WP-P0-001,DOCS/PROJECT_SKILLS.md,generate-skills-registry.py + git diff --exit-code,none,artifacts/evidence/P0/WP-P0-001,G-P0,VERIFIED
+GOV-P0-5,ADR-0001,WP-P0-001,RUN_STATE.yaml WORK_QUEUE.yaml,yaml parse in bootstrap,none,artifacts/evidence/P0/WP-P0-001,G-P0,VERIFIED
+GOV-P0-6,ADR-0001,WP-P0-001,.github/workflows/ci.yml,docs-and-guards job (reproduced locally),none,artifacts/evidence/P0/WP-P0-001,G-P0,VERIFIED
+GOV-P0-7,ADR-0001,WP-P0-001,scripts/guard-destructive.sh,guard-destructive-selftest.sh,none,artifacts/evidence/P0/WP-P0-001,G-P0,VERIFIED
