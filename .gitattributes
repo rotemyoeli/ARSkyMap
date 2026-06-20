@@ -1,0 +1,23 @@
+# Deterministic line endings so cross-platform CI (ubuntu) matches the Windows host.
+# Governance/generated/text files are normalized to LF; large binaries are excluded.
+DOCS/PROJECT_SKILLS.md text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.csv text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+SHA256SUMS text eol=lf
+*SHA256SUMS text eol=lf
+
+# Binary / non-normalized assets
+*.pdf binary
+*.docx binary
+*.png binary
+*.jpg binary
+*.ico binary
+*.svg -text
+*.html -text

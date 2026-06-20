@@ -4,6 +4,18 @@
 > current at the end of every work session. If code and HANDOFF disagree, fix the
 > disagreement before doing anything else.
 
+> **⚑ OrbitMark governance program (2026-06-20).** The repo is now driven by the
+> controlled OrbitMark autonomous-development package. **Authority order:** `CLAUDE.md`
+> → `DOCS/00_README_AND_AUTHORITY.md` → CDR v1.2 → `DOCS/02..07` → `DOCS/PROJECT_SKILLS.md`
+> → `DOCS/design_handoff_orbitmark/` (binding UX/UI). State lives in `RUN_STATE.yaml` +
+> `WORK_QUEUE.yaml`; cycle = plan→council→implement→verify→evidence→council→gate→PR.
+> **Status:** P0 **WP-P0-001 DONE, Gate G-P0 PASS** (PR #1 → `develop`, CI green; evidence
+> `artifacts/evidence/P0/WP-P0-001/`). **Next ready: WP-P1-001** (greenfield monorepo
+> foundation) — install `pnpm` first; reconcile `deploy.yml`/CI (BLK-003, main now
+> branch-protected). The M0 spike below (`backend/`,`web/`) is legacy, superseded by the
+> P1 monorepo (not deleted). Boundaries: never merge `main`, deploy prod, expose secrets,
+> accept provider terms, or weaken a gate.
+
 ## Standing conventions (carry-over)
 - **English only** in code, comments, commits, and identifiers.
 - **PowerShell-compatible** commands in all docs (Windows dev host).

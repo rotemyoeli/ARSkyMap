@@ -1,0 +1,3 @@
+> python scripts/validate-docs.py
+PASS: 11 required files, 15 unique skills
+PASS

@@ -1,0 +1,18 @@
+version: 1
+project: OrbitMark
+phase: P1
+current_work_package: null
+status: READY
+branch: null
+worktree: null
+last_completed: WP-P0-001
+last_gate: {gate: G-P0, decision: PASS, record: DOCS/gates/GATE_G-P0.md}
+last_evidence: artifacts/evidence/P0/WP-P0-001/20260620T071505Z
+retry_counts: {}
+external_blockers:
+  - BLK-001
+  - BLK-002
+ops_blockers:
+  - BLK-003  # MITIGATED: main branch protection enabled; deploy/CI reconciliation owned by WP-P1-001
+next_action: Run orbitmark-autopilot to begin WP-P1-001 (Foundation); install pnpm first
+updated_at: 2026-06-20T07:20:00Z

@@ -1,0 +1,28 @@
+name: OrbitMark CI
+
+# P0 CI skeleton: governance docs, generated skills-registry drift, and the
+# destructive-command guard self-test. The web (pnpm) and python (pytest) jobs are
+# (re)introduced in WP-P1-001 once the monorepo root manifests exist; they were
+# removed here because a job-level `if: hashFiles(...)` is not valid before checkout
+# and caused a workflow startup failure.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  docs-and-guards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python scripts/validate-docs.py
+      - run: python scripts/generate-skills-registry.py && git diff --exit-code DOCS/PROJECT_SKILLS.md
+      - run: bash scripts/guard-destructive-selftest.sh
